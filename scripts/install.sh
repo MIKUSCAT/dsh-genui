@@ -102,6 +102,14 @@ try {
 
   sync_skill_to "$SKILL_FILE" "$DSH_HOME/skills/genui/SKILL.md" "DSH_HOME/skills/genui"
   sync_skill_to "$SKILL_FILE" "$AGENTS_HOME/skills/genui/SKILL.md" "AGENTS_HOME/skills/genui"
+  # Keep on-demand references beside the copied skill as well as in the package.
+  RESOURCE_DIR="$(dirname "$SKILL_FILE")"
+  for RESOURCE in docs/components.md ICON-NAMES.md; do
+    if [ -f "$RESOURCE_DIR/$RESOURCE" ]; then
+      sync_skill_to "$RESOURCE_DIR/$RESOURCE" "$DSH_HOME/skills/genui/$RESOURCE" "DSH_HOME/skills/genui/$RESOURCE"
+      sync_skill_to "$RESOURCE_DIR/$RESOURCE" "$AGENTS_HOME/skills/genui/$RESOURCE" "AGENTS_HOME/skills/genui/$RESOURCE"
+    fi
+  done
 }
 
 echo "${BOLD}== dsh-genui 安装（profile: ${PROFILE}）==${NC}"
@@ -129,7 +137,7 @@ if [ -f "$PROFILE_PKG" ] && grep -q '"@mikuscat/dsh-genui"' "$PROFILE_PKG" 2>/de
 fi
 
 # ── 安装 ───────────────────────────────────────────────────────────────────
-echo "安装中（从 npm 拉取公开包并安装依赖）..."
+echo "安装中（从 GitHub Release 获取安装包）..."
 dsh plugin --profile "$PROFILE" add "$PACKAGE_SPEC"
 sync_skill
 

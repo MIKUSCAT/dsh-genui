@@ -41,6 +41,9 @@ function makeEnv(): Env {
   mkdirSync(pkg, { recursive: true })
   writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@mikuscat/dsh-genui', version: '0.0.0-test' }))
   writeFileSync(join(pkg, 'SKILL.md'), PACKAGE_SKILL)
+  mkdirSync(join(pkg, 'docs'))
+  writeFileSync(join(pkg, 'docs/components.md'), 'COMPONENT-REFERENCE\n')
+  writeFileSync(join(pkg, 'ICON-NAMES.md'), 'ICON-REFERENCE\n')
   // profile already lists the plugin → idempotent branch → sync_skill only
   mkdirSync(profile, { recursive: true })
   writeFileSync(join(profile, 'package.json'), '{"name":"web","dependencies":{"@mikuscat/dsh-genui":"link:whatever"}}\n')
