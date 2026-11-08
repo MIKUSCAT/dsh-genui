@@ -16,6 +16,7 @@
  */
 import type { GenuiSpec } from './spec.ts'
 import { t } from './i18n/index.ts'
+import { binarySearchExample, thresholdExample } from './interactive-examples.ts'
 
 /** Stable, locale-independent category ids. */
 export const TEMPLATE_CATEGORIES = [
@@ -50,6 +51,16 @@ export interface GenuiTemplate {
  */
 export function genuiTemplates(): readonly GenuiTemplate[] {
   return [
+    {
+      id: 'tpl-stepper', category: 'flow', name: t('tpl.stepper.name'),
+      description: t('tpl.stepper.desc'), instruction: t('tpl.stepper.instruction'),
+      demo: binarySearchExample(),
+    },
+    {
+      id: 'tpl-threshold', category: 'interactive', name: t('tpl.threshold.name'),
+      description: t('tpl.threshold.desc'), instruction: t('tpl.threshold.instruction'),
+      demo: thresholdExample(),
+    },
     {
       id: 'tpl-dashboard',
       category: 'dashboard',

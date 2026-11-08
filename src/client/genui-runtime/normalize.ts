@@ -318,6 +318,12 @@ function normalizeNode(value: unknown, path: string, warnings: GenuiDiagnostic[]
           : [normalizeNodeValue(normalizedHolder.items, `${path}.tabs[${index}].items[0]`)]
       return normalizedHolder
     })
+  } else if (type === 'stepper' && Array.isArray(out.steps)) {
+    out.steps = out.steps.map((step, index) => {
+      const holder = record(step)
+      if (holder === undefined || index >= GENUI_LIMITS.maxStepperSteps) return step
+      return { ...holder, items: normalizeNodeArray(holder.items, `${path}.steps[${index}].items`) }
+    })
   } else if (type === 'accordion' && Array.isArray(out.items)) {
     out.items = out.items.map((item, index) => {
       const holder = record(item)

@@ -597,6 +597,11 @@ function repairNodeFields(value: unknown, ctx: RepairCtx, depth: number): GenuiN
       if (tabs === undefined) return null
       return { type: 'tabs', tabs }
     }
+    case 'stepper': {
+      const steps = repairAccordion(Array.isArray(v.steps) ? v.steps.slice(0, GENUI_LIMITS.maxStepperSteps) : v.steps, ctx, depth)
+      if (steps === undefined || steps.length === 0) return null
+      return { type: 'stepper', steps, ...opt('id', str(v.id, 200)), ...opt('initialStep', int(v.initialStep, 0, steps.length - 1)) }
+    }
     case 'plot': {
       const series = repairPlotSeries(v.series, GENUI_LIMITS.maxPlotSeries)
       if (series === undefined) return null
@@ -1460,6 +1465,12 @@ export function countGenuiNodes(value: unknown, cap = Number.POSITIVE_INFINITY):
           const to = obj(t)
           if (to !== undefined) walk(to.items)
         }
+      } else if (v.type === 'stepper' && Array.isArray(v.steps)) {
+        for (const step of v.steps) {
+          if (count >= cap) return
+          const holder = obj(step)
+          if (holder !== undefined) walk(holder.items)
+        }
       } else if (v.type === 'accordion' && Array.isArray(v.items)) {
         for (const it of v.items) {
           if (count >= cap) return
@@ -1541,6 +1552,11 @@ function visitDeclaredGenuiNodes(
       const tabCount = familyCaps ? Math.min(v.tabs.length, GENUI_LIMITS.maxTabs) : v.tabs.length
       for (let tab = 0; tab < tabCount; tab++) {
         walkItemsOf(v.tabs[tab], `${at}.tabs[${tab}]`, depth + 1)
+      }
+    } else if (v.type === 'stepper' && Array.isArray(v.steps)) {
+      const length = familyCaps ? Math.min(v.steps.length, GENUI_LIMITS.maxStepperSteps) : v.steps.length
+      for (let step = 0; step < length; step++) {
+        walkItemsOf(v.steps[step], `${at}.steps[${step}]`, depth + 1)
       }
     } else if (v.type === 'accordion' && Array.isArray(v.items)) {
       const rowCount = familyCaps ? Math.min(v.items.length, GENUI_LIMITS.maxAccordionItems) : v.items.length
@@ -1814,7 +1830,7 @@ export function processGenuiSpec(value: unknown, options: GenuiValidationOptions
   })
   const truncationReasons: string[] = []
   if (uncappedPolicyNodeCount > declaredNativeCount) {
-    truncationReasons.push(`${uncappedPolicyNodeCount - declaredNativeCount} 个声明节点超出 tabs ≤ ${GENUI_LIMITS.maxTabs} / accordion ≤ ${GENUI_LIMITS.maxAccordionItems} 的上限`)
+    truncationReasons.push(`${uncappedPolicyNodeCount - declaredNativeCount} 个声明节点超出 tabs ≤ ${GENUI_LIMITS.maxTabs} / accordion ≤ ${GENUI_LIMITS.maxAccordionItems} / stepper ≤ ${GENUI_LIMITS.maxStepperSteps} 的上限`)
   }
   if (carouselItemOverflow > 0) {
     truncationReasons.push(`${carouselItemOverflow} 个 carousel 项超出 carousel ≤ ${GENUI_LIMITS.maxCarouselItems} 的上限`)
@@ -1835,7 +1851,7 @@ export function processGenuiSpec(value: unknown, options: GenuiValidationOptions
     warnings.push({
       kind: 'truncated',
       path: 'spec',
-      message: `策略上限截断:${truncationReasons.join('；')},未渲染;策略限制包括 tabs ≤ ${GENUI_LIMITS.maxTabs} / accordion ≤ ${GENUI_LIMITS.maxAccordionItems} / carousel ≤ ${GENUI_LIMITS.maxCarouselItems} / image-group ≤ ${GENUI_LIMITS.maxImageGroupItems} / table.rows ≤ ${GENUI_LIMITS.maxTableRows} / list.items ≤ ${GENUI_LIMITS.maxListItems} / file-tree 每层 ≤ ${GENUI_LIMITS.maxListItems};围栏照常渲染,重发时可分为多个组件`,
+      message: `策略上限截断:${truncationReasons.join('；')},未渲染;策略限制包括 tabs ≤ ${GENUI_LIMITS.maxTabs} / accordion ≤ ${GENUI_LIMITS.maxAccordionItems} / stepper ≤ ${GENUI_LIMITS.maxStepperSteps} / carousel ≤ ${GENUI_LIMITS.maxCarouselItems} / image-group ≤ ${GENUI_LIMITS.maxImageGroupItems} / table.rows ≤ ${GENUI_LIMITS.maxTableRows} / list.items ≤ ${GENUI_LIMITS.maxListItems} / file-tree 每层 ≤ ${GENUI_LIMITS.maxListItems};围栏照常渲染,重发时可分为多个组件`,
     })
   }
   return {
@@ -2280,6 +2296,18 @@ function validateNode(value: unknown, depth: number, at: string, errors: string[
       break
     case 'callout':
       if (typeof v.content !== 'string') errors.push(`${at}: type 'callout' requires content (string)`)
+      break
+    case 'stepper':
+      if (!Array.isArray(v.steps) || v.steps.length === 0) errors.push(`${at}: stepper requires a nonempty steps array`)
+      if (Array.isArray(v.steps)) {
+        v.steps.forEach((step, i) => {
+          const holder = obj(step)
+          if (holder === undefined) { errors.push(`${at}.steps[${i}] must be an object`); return }
+          if (typeof holder.title !== 'string') errors.push(`${at}.steps[${i}].title must be a string`)
+          if (!Array.isArray(holder.items)) errors.push(`${at}.steps[${i}].items must be an array`)
+          walk(holder.items, depth + 1, `${at}.steps[${i}].items`)
+        })
+      }
       break
     case 'steps':
       if (!Array.isArray(v.steps)) errors.push(`${at}: type 'steps' requires steps (array)`)

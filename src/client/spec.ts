@@ -47,6 +47,7 @@ export type GenuiNode = (
   | GenuiPlot
   | GenuiCallout
   | GenuiSteps
+  | GenuiStepper
   | GenuiKeyValue
   | GenuiDiff
   | GenuiJson
@@ -750,6 +751,14 @@ export interface GenuiAccordionItem {
 export interface GenuiAccordion {
   type: 'accordion'
   items: GenuiAccordionItem[]
+}
+
+/** Ordered, locally navigable stages. Navigation never invokes a model action. */
+export interface GenuiStepper {
+  type: 'stepper'
+  id?: string
+  initialStep?: number
+  steps: Array<{ title: string; items: GenuiNode[] }>
 }
 
 export interface GenuiCopy {

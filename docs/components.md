@@ -61,6 +61,7 @@ Check CheckCircle Info InfoCircle Warning Error X Plus Minus Circle ArrowDown Ar
 **full option 模式**：传 `"option":{...}` 直接写 ECharts 原生配置（支持 ECharts 内置图表及已注册的 `wordCloud` 词云扩展；其他第三方扩展不保证可用），option 中的函数会被过滤（只接受数据）。选择原则：**chart 轻量（无额外下载）适合 ≤8 点的快速对比；echart 视觉更丰富（渐变、tooltip、图例交互、dataZoom），但会按需下载约 1MB 引擎，多序列/大屏/交互场景优先**
 
 ### 交互
+- stepper: `{"type":"stepper","id":"lesson","initialStep":0,"steps":[{"title":"阶段名","items":[...]}]}`。最多 12 个阶段，initialStep 从 0 起，默认 0；组件自带上一步、下一步和步骤选择。翻页不调用模型。已访问内容保留实例，当前位置和带 id 的字段可保存及导出。Go 面板用原生步骤选择呈现，最多 8 个阶段。
 **本地优先（v2.6）**：UI 自己能做的状态变化——判卷、判题、重置、展开、选中——一律本地即时完成，**零模型往返**。action 只用于必须模型参与的事（生成新内容、执行工具、下一步建议）。**交互组件必须带 action：不带 action 的按钮渲染为禁用态，用户点不了；带 action 的按钮点击后有「已触发」本地反馈。**
 - button: `{"type":"button","label":"...","tone":"primary|danger|success|ghost","full":true?,"small":true?,"icon":"Check","action":"refresh"?}`
 - **秘密禁令**：不得索取或生成密码、API Key、访问令牌、恢复码等秘密输入；遇到此类需求直接拒绝并解释
@@ -106,7 +107,7 @@ Check CheckCircle Info InfoCircle Warning Error X Plus Minus Circle ArrowDown Ar
 文字字段只支持行内富文本。`text.content`、`callout.content`、`list` 项、`keyvalue` 值、`table` 单元格等字段中不要嵌入 Markdown 表格或连续三个及以上反引号、波浪号组成的代码围栏；表格使用 `table`，代码使用 `code`，代码改动使用 `diff`，结构化 JSON 使用 `json`。误写入文字字段的代码围栏连同内部标记保持原文，未闭合时从围栏标记开始保持原文。`validate_dsh_ui` 返回 `warning=block_markdown` 时，按照 `replacement` 改写结构节点并重新验证。
 
 ### Computed（输入驱动计算）
-在规格根部用 `computed` 声明有序无关的计算字段。表达式只支持数字、字段 ID、括号、`+ - * / % ^` 和 `sin cos tan asin acos atan sqrt cbrt exp log ln abs floor ceil round min max pow` 白名单函数，以及 `pi/e/tau` 常量；不执行 JavaScript。字段 ID 以字母或下划线开头，后续可含数字，最多 64 个字符。表达式最多 512 个字符、嵌套最多 32 层、每份规格最多 50 个计算字段；未声明字段、循环依赖和无效数值会显示为无效输入，图表会跳过无效点。
+在规格根部用 `computed` 声明有序无关的计算字段。表达式支持条件 `条件 ? 成立分支 : 否则分支`、比较 `< <= > >= == !=`、逻辑 `&& || !`，以及数字、字段 ID、括号、`+ - * / % ^` 和 `sin cos tan asin acos atan sqrt cbrt exp log ln abs floor ceil round min max pow` 白名单函数，以及 `pi/e/tau` 常量；不执行 JavaScript。比較与逻辑结果为 1/0；条件为有限非零数时成立。`?:` 和 `&&/||` 只计算选中的分支，未选分支的无效输入不会影响当前结果；未声明名称和循环依赖仍始终报错。以上语法同样可用于 plot。字段 ID 以字母或下划线开头，后续可含数字，最多 64 个字符。表达式最多 512 个字符、嵌套最多 32 层、每份规格最多 50 个计算字段；未声明字段、循环依赖和无效数值会显示为无效输入，图表会跳过无效点。
 
 `{{fieldId}}` 只用于允许插值的展示字段，例如规格标题、文本和统计卡片文字；代码、SVG、Mermaid 源码及 JSON 等原始数据保留原文，未知展示字段会在校验时报告。输入字段与计算字段重名时，该字段及依赖它的计算字段均显示为无效输入。`chart`、`echart` 的数据点和 `table` 单元格使用 `{"$computed":"fieldId"}` 引用数值。完整 ECharts `option` 中的数据值也可使用该引用。`format` 可设置 `locale`、`style`（`decimal|currency|percent`）、`currency` 和小数位范围。表格显示格式化文字，排序使用原始数值。`number` 输入接受带正负号的小数及科学计数法十进制值；十六进制、二进制和八进制写法无效。暂时无法解析的编辑内容保留在输入框中，不会覆盖上一次有效计算值；必填字段处于无效编辑状态时，提交按钮会禁用并显示提示。
 

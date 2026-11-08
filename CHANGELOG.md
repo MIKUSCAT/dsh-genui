@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.0-miku.1
+
+- Add a local stepper with stage selection, keyboard navigation, visited-widget retention and durable/exported position.
+- Add numeric comparisons, logical operators and short-circuit conditional expressions to Computed and Plot.
+- Resolve computed inputs only in selected branches; retain static name validation and cycle detection.
+- Add binary-search and threshold templates, localized authoring guidance, offline previews and browser regression coverage.
+
+
 ## 0.15.0-miku.1
 
 Personal edition maintained by MIKUSCAT, based on upstream v0.15.0.

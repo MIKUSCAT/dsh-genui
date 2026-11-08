@@ -9,6 +9,27 @@
 
 ![预算工具的浅色预览](docs/images/budget-light.png)
 
+## 分步推演与条件计算
+
+`stepper` 一次接收全部阶段，自带上一步、下一步、阶段选择和键盘导航。已访问阶段
+保留控件实例，当前位置和带 `id` 的输入可以保存、恢复及导出。每个阶段可以放公式、
+数组图解、图表和表格。导航本身不请求模型。
+
+![二分查找分步推演](docs/images/stepper-light.png)
+
+`computed` 与 `plot` 支持比较 `< <= > >= == !=`、逻辑 `&& || !` 和三元表达式
+`条件 ? 成立分支 : 否则分支`。只计算选中的分支，例如 `x == 0 ? 0 : 1/x` 在零点
+返回 0。比较与逻辑结果为 1/0，条件使用有限数值；未声明名称、循环依赖与任意脚本仍不允许。
+
+模板中心提供「二分查找推演」与「阈值响应」。也可以直接对模型说：
+
+> 用 stepper 分五步演示二分查找，每一步展示数组和搜索区间。
+
+> 用 computed 条件表达式做一个可调阈值的分段响应曲线。
+
+[Release](https://github.com/MIKUSCAT/dsh-genui/releases/latest) 中的 `stepper-light.html`
+与 `threshold-light.html` 可下载后离线操作，另附深色版本。
+
 ## 安装
 
 在已安装 DSH、Node.js 和 pnpm 的终端执行：
@@ -55,14 +76,15 @@ Node.js 24，pnpm 11.7.0。首次安装：
 ```sh
 npx --yes pnpm@11.7.0 install --frozen-lockfile
 npx --yes pnpm@11.7.0 run check
-npx --yes pnpm@11.7.0 run check:design
 npx --yes pnpm@11.7.0 run preview
+npx --yes pnpm@11.7.0 run check:design
 ```
 
 `check` 执行类型检查、单元测试、构建及独立导出资源检查。
 `check:design` 使用已安装的 Chrome / Chromium，检查真实布局、对比度、输入联动、
 窄容器和放大字体；可用 `BROWSER_BIN` 指定浏览器路径。测试只使用合成数据和独立浏览器配置。
-`preview` 从构建产物生成可离线打开的预算工具，输出在 `.e2e-artifacts/preview/`。
+`preview` 从构建产物生成预算、分步推演和条件计算示例，输出在 `.e2e-artifacts/preview/`。
+先生成预览，再运行浏览器检查，以验证实际导出文件中的运行代码。
 
 生产安装包：
 

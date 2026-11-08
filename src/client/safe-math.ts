@@ -4,11 +4,16 @@
  * 表达式使用白名单函数与常量，不调用 eval 或 new Function。strict 模式拒绝未声明名称，但允许内置常量；plot 模式允许单字母隐式参数。对象属性访问和未允许的函数调用始终会被拒绝。
  *
  * 支持的语法：
+ *   choice  := logicalOr ('?' choice ':' choice)?
+ *   logicalOr := logicalAnd ('||' logicalAnd)*
+ *   logicalAnd := equality ('&&' equality)*
+ *   equality := compare (('==' | '!=') compare)*
+ *   compare := expr (('<' | '<=' | '>' | '>=') expr)*
  *   expr    := term (('+' | '-') term)*
  *   term    := unary (('*' | '/' | '%') unary)*
- *   unary   := ('-' | '+') unary | power
+ *   unary   := ('-' | '+' | '!') unary | power
  *   power   := atom ('^' atom)?
- *   atom    := number | variable | constant | func '(' expr ')' | '(' expr ')'
+ *   atom    := number | variable | constant | func '(' choice ')' | '(' choice ')'
  *   constant: 'pi' | 'e' | 'tau'
  *   func    : sin cos tan asin acos atan sqrt cbrt exp log ln abs floor ceil round min max pow
  */
@@ -20,6 +25,8 @@ export interface SafeMathOptions {
   allowImplicitVariables?: boolean
   /** 面板上下文确定前解析追加项引用；未绑定的值按 NaN 处理，不提供运行时备用值。 */
   allowUnboundVariables?: boolean
+  /** Trusted host resolver, called only when a declared variable is evaluated. */
+  resolveVariable?: (name: string) => number
 }
 
 export interface SafeMathProgram {
@@ -73,10 +80,11 @@ class SafeMathParser {
     private readonly vars: Record<string, number>,
     private readonly allowImplicitVariables: boolean,
     private readonly allowUnboundVariables: boolean,
+    private readonly resolveVariable: ((name: string) => number) | undefined,
   ) {}
 
   parse(): SafeMathProgram {
-    const node = this.parseExpr()
+    const node = this.parseConditional()
     this.skipWs()
     if (this.i < this.src.length) throw new ParseError('unexpected trailing input', this.i)
     return { evaluate: this.evalNode(node), variables: [...this.variables] }
@@ -85,6 +93,89 @@ class SafeMathParser {
   private evalNode(node: number | ((x: number) => number)): (x: number) => number {
     if (typeof node === 'number') return () => node
     return node
+  }
+
+  private take(operator: string): boolean {
+    this.skipWs()
+    if (!this.src.startsWith(operator, this.i)) return false
+    this.i += operator.length
+    return true
+  }
+
+  /** Conditions use finite numbers: zero is false; all other values are true. */
+  private parseConditional(): number | ((x: number) => number) {
+    const condition = this.parseOr()
+    if (!this.take('?')) return condition
+    const yes = this.withDepth(() => this.parseConditional())
+    if (!this.take(':')) throw new ParseError('expected : in conditional', this.i)
+    const no = this.withDepth(() => this.parseConditional())
+    return x => {
+      const value = this.asNum(condition, x)
+      if (!Number.isFinite(value)) return NaN
+      return this.asNum(value !== 0 ? yes : no, x)
+    }
+  }
+
+  private parseOr(): number | ((x: number) => number) {
+    let left = this.parseAnd()
+    while (this.take('||')) {
+      const previous = left
+      const right = this.parseAnd()
+      left = x => {
+        const value = this.asNum(previous, x)
+        if (!Number.isFinite(value)) return NaN
+        if (value !== 0) return 1
+        const other = this.asNum(right, x)
+        return Number.isFinite(other) ? Number(other !== 0) : NaN
+      }
+    }
+    return left
+  }
+
+  private parseAnd(): number | ((x: number) => number) {
+    let left = this.parseEquality()
+    while (this.take('&&')) {
+      const previous = left
+      const right = this.parseEquality()
+      left = x => {
+        const value = this.asNum(previous, x)
+        if (!Number.isFinite(value)) return NaN
+        if (value === 0) return 0
+        const other = this.asNum(right, x)
+        return Number.isFinite(other) ? Number(other !== 0) : NaN
+      }
+    }
+    return left
+  }
+
+  private parseEquality(): number | ((x: number) => number) {
+    let left = this.parseComparison()
+    for (;;) {
+      const operator = this.take('==') ? '==' : this.take('!=') ? '!=' : undefined
+      if (operator === undefined) return left
+      const previous = left
+      const right = this.parseComparison()
+      left = x => {
+        const a = this.asNum(previous, x), b = this.asNum(right, x)
+        if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN
+        return Number(operator === '==' ? a === b : a !== b)
+      }
+    }
+  }
+
+  private parseComparison(): number | ((x: number) => number) {
+    let left = this.parseExpr()
+    for (;;) {
+      const operator = ['<=', '>=', '<', '>'].find(op => this.take(op))
+      if (operator === undefined) return left
+      const previous = left
+      const right = this.parseExpr()
+      left = x => {
+        const a = this.asNum(previous, x), b = this.asNum(right, x)
+        if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN
+        return Number(operator === '<' ? a < b : operator === '<=' ? a <= b : operator === '>' ? a > b : a >= b)
+      }
+    }
   }
 
   private parseExpr(): number | ((x: number) => number) {
@@ -126,10 +217,13 @@ class SafeMathParser {
   private parseUnary(): number | ((x: number) => number) {
     this.skipWs()
     const c = this.char()
-    if (c === '-' || c === '+') {
+    if (c === '-' || c === '+' || c === '!') {
       this.i++
       const operand = this.withDepth(() => this.parseUnary())
-      return c === '-' ? (x) => -this.asNum(operand, x) : (x) => this.asNum(operand, x)
+      return (x) => {
+        const value = this.asNum(operand, x)
+        return c === '!' ? (Number.isFinite(value) ? Number(value === 0) : NaN) : c === '-' ? -value : value
+      }
     }
     return this.parsePower()
   }
@@ -151,7 +245,7 @@ class SafeMathParser {
     const c = this.char()
     if (c === '(') {
       this.i++
-      const inner = this.withDepth(() => this.parseExpr())
+      const inner = this.withDepth(() => this.parseConditional())
       this.skipWs()
       if (this.peek() !== ')') throw new ParseError('expected )', this.i)
       this.i++
@@ -215,7 +309,7 @@ class SafeMathParser {
         this.i++
       } else {
         for (;;) {
-          args.push(this.withDepth(() => this.parseExpr()))
+          args.push(this.withDepth(() => this.parseConditional()))
           this.skipWs()
           const sep = this.peek()
           if (sep === ',') { this.i++; continue }
@@ -229,7 +323,7 @@ class SafeMathParser {
     if (!this.allowImplicitVariables && Object.hasOwn(this.vars, name)) {
       this.variables.add(name)
       const captured = this.vars[name]!
-      return () => captured
+      return this.resolveVariable === undefined ? () => captured : () => this.resolveVariable!(name)
     }
     if (Object.hasOwn(CONSTANTS, name) && this.allowImplicitVariables) return CONSTANTS[name]!
     if (this.allowImplicitVariables && name === 'x') {
@@ -240,7 +334,7 @@ class SafeMathParser {
       this.variables.add(name)
       // 声明参数使用编译时的值；更新参数时会以新值重新编译。
       const captured = this.vars[name]!
-      return () => captured
+      return this.resolveVariable === undefined ? () => captured : () => this.resolveVariable!(name)
     }
     // plot 中未声明的单个小写字母参数默认取 1；该规则不接受全局对象名称。
     if (Object.hasOwn(CONSTANTS, name)) return CONSTANTS[name]!
@@ -317,7 +411,7 @@ export function compileMathExprProgram(expr: string, options: SafeMathOptions = 
     if (options.allowImplicitVariables !== false) delete vars.x
     if (expr.length > SAFE_MATH_LIMITS.maxExpressionLength
       || Object.values(vars).some(value => !Number.isFinite(value))) return null
-    return new SafeMathParser(expr, vars, options.allowImplicitVariables !== false, options.allowUnboundVariables === true).parse()
+    return new SafeMathParser(expr, vars, options.allowImplicitVariables !== false, options.allowUnboundVariables === true, options.resolveVariable).parse()
   } catch {
     return null
   }

@@ -2,17 +2,20 @@ import { currentLocale } from '../i18n/index.ts'
 import { processGenuiSpec } from '../guard.ts'
 import type { BlockInteractionState } from '../interaction-store.ts'
 import type { GenuiNode, GenuiSpec } from '../spec.ts'
+import { normalizeStepperState } from '../stepper-state.ts'
 import { GenuiExportError, GENUI_ARTIFACT_FORMAT, GENUI_ARTIFACT_VERSION, type CreateGenuiArtifactOptions, type GenuiArtifactTheme, type GenuiArtifactV1 } from './types.ts'
 
 /** 复制 durable 状态并移除密码字段。 */
-function safeState(state: BlockInteractionState | undefined, secretIds: Set<string>): BlockInteractionState | undefined {
+function safeState(state: BlockInteractionState | undefined, secretIds: Set<string>, spec: GenuiSpec): BlockInteractionState | undefined {
   if (state === undefined) return undefined
   const fields = Object.fromEntries(Object.entries(state.fields ?? {}).filter(([id]) => !secretIds.has(id)))
+  const stepperSteps = normalizeStepperState(spec, state.stepperSteps)
   return {
     ...(state.answers === undefined ? {} : { answers: { ...state.answers } }),
     ...(state.multiAnswers === undefined ? {} : { multiAnswers: Object.fromEntries(Object.entries(state.multiAnswers).map(([id, values]) => [id, [...values]])) }),
     ...(state.locked === undefined ? {} : { locked: state.locked }),
     ...(Object.keys(fields).length === 0 ? {} : { fields }),
+    ...(Object.keys(stepperSteps).length === 0 ? {} : { stepperSteps }),
   }
 }
 
@@ -39,6 +42,9 @@ function sanitizeNodes(items: GenuiNode[], secretIds: Set<string>): GenuiNode[] 
     if (Array.isArray(node.tabs)) {
       node.tabs = node.tabs.map(tab => ({ ...tab, items: sanitizeNodes(tab.items, secretIds) }))
     }
+    if (node.type === 'stepper') {
+      node.steps = node.steps.map(step => ({ ...step, items: sanitizeNodes(step.items, secretIds) }))
+    }
     if (node.type === 'table' && Array.isArray(node.details)) {
       node.details = node.details.map(row => row === null ? null : sanitizeNodes(row, secretIds))
     }
@@ -59,7 +65,7 @@ export function createGenuiArtifact(
   const secretIds = new Set<string>()
   const sanitizedSpec = { ...portableSpec, items: sanitizeNodes(portableSpec.items, secretIds) }
   const theme: GenuiArtifactTheme = options.theme ?? (typeof document !== 'undefined' && document.body.hasAttribute('data-ds-dark-theme') ? 'dark' : 'light')
-  const sanitizedState = safeState(state, secretIds)
+  const sanitizedState = safeState(state, secretIds, sanitizedSpec)
   return {
     format: GENUI_ARTIFACT_FORMAT,
     version: GENUI_ARTIFACT_VERSION,

@@ -149,6 +149,13 @@ export function compileDshGo(spec: GenuiSpec, surface: NativeSurface, state: Nat
         const selected = state.tabs[key] ?? 0, tab = item.tabs[selected] ?? item.tabs[0]
         return stack([{type:'options',id:action(item,key,'tab'),options:item.tabs.map((t,i) => ({label:t.label,value:String(i)})),selected:[String(selected)]},...children(tab?.items ?? [],`${key}.t${selected}`)])
       }
+      case 'stepper': {
+        if (surface !== 'panel') return panelOnly(key)
+        if (item.steps.length > 8 || !item.steps.length) return unsupported(key,'stepper option limit')
+        const selected = Math.max(0, Math.min(state.tabs[key] ?? item.initialStep ?? 0, item.steps.length - 1))
+        const step = item.steps[selected]!
+        return stack([{type:'options',id:action(item,key,'tab'),options:item.steps.map((s,i) => ({label:s.title,value:String(i)})),selected:[String(selected)]},...children(step.items,`${key}.s${selected}`)])
+      }
       case 'accordion': {
         if (surface !== 'panel') return panelOnly(key)
         if (item.items.length > 8) return unsupported(key,'accordion option limit')

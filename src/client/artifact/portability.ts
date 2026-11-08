@@ -45,6 +45,7 @@ function scan(items: unknown[], report: GenuiPortabilityReport, assets: Set<Genu
       } else scan(node.items, report, assets)
     }
     if (Array.isArray(node.tabs)) for (const tab of node.tabs) if (typeof tab === 'object' && tab !== null && 'items' in tab && Array.isArray(tab.items)) scan(tab.items, report, assets)
+    if (node.type === 'stepper') for (const step of node.steps.slice(0, GENUI_LIMITS.maxStepperSteps)) scan(step.items, report, assets)
     if (node.type === 'table' && Array.isArray(node.details)) for (const row of node.details) if (Array.isArray(row)) scan(row, report, assets)
   }
 }

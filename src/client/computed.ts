@@ -40,6 +40,7 @@ const COMPUTED_TEMPLATE_FIELDS: Record<string, ReadonlySet<string>> = {
   echart: new Set(['title']),
   callout: new Set(['title', 'content']),
   steps: new Set(['steps']),
+  stepper: new Set(['steps']),
   keyvalue: new Set(['pairs']),
   quiz: new Set(['question', 'explanation']),
   submit: new Set(['label']),
@@ -62,6 +63,7 @@ export function getComputedChildNodeScope(type: unknown, key: string, parentScop
   if (parentScope === 'nested-items') return key === 'items'
   if (parentScope !== true) return false
   if (type === 'tabs') return key === 'tabs' ? 'nested-items' : false
+  if (type === 'stepper') return key === 'steps' ? 'nested-items' : false
   if (type === 'accordion') return key === 'items' ? 'nested-items' : false
   if (type === 'table') return key === 'details'
   return key === 'items' && ['row', 'col', 'grid', 'card', 'carousel', 'list'].includes(String(type))
@@ -234,46 +236,35 @@ export function evaluateComputed(spec: GenuiSpec, fields: Readonly<Record<string
   const fieldValues = { ...collectInputDefaults(spec), ...fields }
   const numericValues = Object.create(null) as Record<string, number>
   const formatted = Object.create(null) as Record<string, string>
+  const symbols = Object.fromEntries([...inputIds, ...computedIds].map(id => [id, 0]))
 
   for (const definition of graph.order) {
-    const programVariables = Object.create(null) as Record<string, number>
-    const programReferences = compileMathExprProgram(definition.expr, {
-      vars: Object.fromEntries([...inputIds, ...computedIds].map(id => [id, 0])),
-      allowImplicitVariables: false,
-    })
-    if (programReferences === null) {
-      errors[definition.id] = '表达式无效或引用了未声明字段'
-      continue
-    }
     let invalidInput: string | undefined
-    for (const name of programReferences.variables) {
-      if (Object.hasOwn(numericValues, name)) {
-        programVariables[name] = numericValues[name]!
-        continue
-      }
-      if (!inputIds.has(name)) {
-        invalidInput = name
-        break
-      }
-      const raw = Object.hasOwn(fieldValues, name) ? fieldValues[name] : undefined
-      const value = raw === undefined ? undefined : parseDecimalNumber(raw)
-      if (value === undefined) {
-        invalidInput = name
-        break
-      }
-      numericValues[name] = value
-      programVariables[name] = value
-    }
-    if (invalidInput !== undefined) {
-      errors[definition.id] = `字段 ${invalidInput} 需要有效数值`
-      continue
-    }
-    const program = compileMathExprProgram(definition.expr, { vars: programVariables, allowImplicitVariables: false })
+    const program = compileMathExprProgram(definition.expr, {
+      vars: symbols,
+      allowImplicitVariables: false,
+      // Validate every name while parsing, but read only the executed branch.
+      resolveVariable: name => {
+        if (Object.hasOwn(numericValues, name)) return numericValues[name]!
+        const raw = inputIds.has(name) && Object.hasOwn(fieldValues, name) ? fieldValues[name] : undefined
+        const value = raw === undefined ? undefined : parseDecimalNumber(raw)
+        if (value === undefined) {
+          invalidInput ??= name
+          return NaN
+        }
+        numericValues[name] = value
+        return value
+      },
+    })
     if (program === null) {
       errors[definition.id] = '表达式无效或引用了未声明字段'
       continue
     }
     const value = program.evaluate(0)
+    if (invalidInput !== undefined) {
+      errors[definition.id] = `字段 ${invalidInput} 需要有效数值`
+      continue
+    }
     if (!Number.isFinite(value)) {
       errors[definition.id] = '计算结果超出有效数值范围'
       continue

@@ -19,8 +19,8 @@ jobs:
           version: 11.7.0
       - run: pnpm install --frozen-lockfile
       - run: pnpm run check
-      - run: pnpm run check:design
       - run: pnpm run preview
+      - run: pnpm run check:design
       - uses: actions/upload-artifact@v4
         with:
           name: design-preview

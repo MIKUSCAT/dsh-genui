@@ -2483,6 +2483,26 @@ button.ftNameBtn[aria-expanded] { cursor: pointer; }
 
 
 /* A sidebar can be narrow on a wide monitor: respond to the surface itself. */
+.stepper { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.stepperHeader { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.stepperSelect {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--dsl-g-border-strong);
+  border-radius: var(--dsl-g-radius-control);
+  color: var(--dsl-g-ink);
+  background: var(--dsl-g-surface);
+  font: inherit;
+}
+.stepperPosition { flex: 0 0 auto; color: var(--dsl-g-ink-secondary); font-size: var(--dsl-g-font-body); font-variant-numeric: tabular-nums; }
+.stepperPanel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.stepperPanel[hidden] { display: none !important; }
+.stepperNavigation { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.stepper:focus-visible, .stepperSelect:focus-visible { outline: 2px solid var(--dsl-g-accent); outline-offset: 3px; }
+
 @container genui (max-width: 480px) {
   .grid { grid-template-columns: 1fr !important; }
   .gridSpan { grid-column: auto !important; }

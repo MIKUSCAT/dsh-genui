@@ -29,6 +29,7 @@ import { CarouselNode } from './carousel.tsx'
 import { ImageGroupNode } from './image-group.tsx'
 import { SvgNode } from './svg.tsx'
 import { IconNode, InlineIcon } from './icon.tsx'
+import { StepperNode } from './stepper.tsx'
 import { MapNode } from './map.tsx'
 import { BlocksNode } from './blocks.tsx'
 
@@ -193,6 +194,7 @@ export function renderNode(
 
   switch (node.type) {
     case 'map': return <MapNode key={JSON.stringify([path, node.id, answers?.round ?? 0])} node={node} answers={answers} />
+    case 'stepper': return <StepperNode key={JSON.stringify([path, node.id])} node={node} path={path} depth={depth} answers={answers} onAction={onAction} />
     case 'text': {
       const size = node.size ?? 'body'
       // `align` is canonical; legacy `center: true` maps to the center class.

@@ -135,6 +135,12 @@ export function collectInlineContentWarnings(spec: GenuiSpec): InlineContentWarn
           item.items.forEach((child, j) => visit(child, `${path}.items[${i}].items[${j}]`))
         })
         break
+      case 'stepper':
+        node.steps.forEach((step, i) => {
+          check(step.title, `${path}.steps[${i}].title`)
+          step.items.forEach((child, j) => visit(child, `${path}.steps[${i}].items[${j}]`))
+        })
+        break
       case 'callout':
         check(node.title, `${path}.title`)
         check(node.content, `${path}.content`)

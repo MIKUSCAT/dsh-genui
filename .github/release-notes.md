@@ -1,17 +1,16 @@
-MIKUSCAT 的首个 GenUI 定制版，基于上游 0.15.0。
+GenUI 0.16：本地分步推演与条件计算。
 
-- 暖白、暖灰和陶土色，统一文字层级、分组间距及窄屏布局。
-- 默认不生成装饰性 emoji、眉题或注释小字；简化面板与模板界面。
-- 保留图表、表单、本地计算、地图、3D、导出和原有交互格式。
+- 新增 `stepper`：本地前后翻页、阶段跳转、键盘导航，保留已访问控件，并支持保存与离线导出恢复。
+- `computed` / `plot` 支持比较、逻辑和 `?:` 条件表达式，短路求值避免未选分支影响当前结果。
+- 模板中心新增二分查找和阈值响应；沿用暖灰、陶土色及简洁布局。
 
-从上游版迁移时，先移除旧插件，再安装本页附件：
+已安装 MIKUSCAT 版可直接升级：
 
 ```sh
-dsh plugin --profile desktop remove @changfenhuang/dsh-genui
 dsh plugin --profile desktop add "https://github.com/MIKUSCAT/dsh-genui/releases/latest/download/dsh-genui.tgz"
 ```
 
 安装后重新打开 DSH。Web 用户将 desktop 换成 web。
 
-`genui-light.html` 和 `genui-dark.html` 是可离线操作的示例。
+`stepper-light.html`、`threshold-light.html` 是可离线操作的新示例，另附深色版本及预算示例。
 `SHA256SUMS` 用于校验安装包。源代码与第三方声明保留在仓库中。

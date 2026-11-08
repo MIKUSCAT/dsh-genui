@@ -1,6 +1,6 @@
 ---
 name: genui
-description: "Create useful interactive interfaces inside DSH replies with the dsh-ui JSON fence: calculators, comparisons, charts, forms and small tools. Use when operating or inspecting a surface adds value. Preserve conversation language for all user-visible text."
+description: "Create useful interactive interfaces inside DSH replies with the dsh-ui JSON fence: step-by-step walkthroughs, calculators, comparisons, charts and forms. Use when operating or inspecting a surface adds value. Preserve conversation language for all user-visible text."
 ---
 
 # GenUI / MIKUSCAT
@@ -83,6 +83,17 @@ updated panel and, if needed, one concise confirmation.
 - `computed` accepts the documented mathematical expression language, not
   JavaScript. Use `{{fieldId}}` in supported display strings and
   `{"$computed":"fieldId"}` for table/chart numbers.
+- Computed and plot expressions support `< <= > >= == !=`, `&& || !` and
+  `condition ? yes : no`. Comparisons and logical operators return 1 or 0;
+  a finite nonzero condition is true. Branches and logical operators short-circuit.
+  Only numeric results are supported. All names must be declared and dependency
+  cycles remain invalid, including in an unselected branch.
+- Use `stepper` for a sequence the reader advances locally. Supply all stages
+  once as `steps: [{title, items}]`, up to 12 stages. Each stage can hold normal
+  components. Navigation, stage selection and keyboard controls are built in;
+  do not add separate next-step actions. Use stable, unique IDs for inputs across
+  the whole walkthrough so their values restore after reopening or exporting.
+  These are precomputed explanatory stages, not an arbitrary algorithm interpreter.
 - Declare `action` only when the model must do something. An actionable button
   requires a real action; do not add a nonfunctional CTA. A received
   `[genui-action]` names the action and carries the user's current data.
@@ -144,6 +155,22 @@ The explanation is substantive feedback after answering.
 
 ```json dsh-ui
 {"items":[{"type":"radio","label":"<user-language question>","group":"q1","options":["<user-language option A>","<user-language option B>"],"answer":1,"explanation":"<user-language answer explanation>"}]}
+```
+
+### Advance through a derivation
+
+The component supplies the navigation; stage content supplies the explanation.
+
+```json dsh-ui
+{"items":[{"type":"stepper","id":"derivation","steps":[{"title":"<user-language starting point>","items":[{"type":"text","content":"<user-language initial expression>"}]},{"title":"<user-language transformation>","items":[{"type":"text","content":"<user-language transformed expression>"}]},{"title":"<user-language result>","items":[{"type":"text","content":"<user-language final result>"}]}]}]}
+```
+
+### Compute a threshold response
+
+Both inputs and the resulting value stay local.
+
+```json dsh-ui
+{"computed":[{"id":"response","expr":"x < threshold ? 2*x : 2*threshold"}],"items":[{"type":"slider","id":"x","label":"<user-language input>","min":0,"max":10,"step":0.5,"value":3},{"type":"slider","id":"threshold","label":"<user-language threshold>","min":1,"max":9,"value":5},{"type":"stat","label":"<user-language response>","value":"{{response}}"}]}
 ```
 
 ### Rejected chart shape

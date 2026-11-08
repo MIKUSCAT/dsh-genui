@@ -45,6 +45,11 @@ function visitNativeNodes(value: unknown, path: string, visit: (node: Record<str
       if (Array.isArray(holder.items)) holder.items.forEach((child, childIndex) => children(child, `${path}.tabs[${index}].items[${childIndex}]`))
       else children(holder.items, `${path}.tabs[${index}].items`)
     })
+  } else if (type === 'stepper' && Array.isArray(value.steps)) {
+    value.steps.slice(0, GENUI_LIMITS.maxStepperSteps).forEach((step, index) => {
+      const holder = record(step)
+      if (Array.isArray(holder?.items)) holder.items.forEach((child, childIndex) => children(child, `${path}.steps[${index}].items[${childIndex}]`))
+    })
   } else if (type === 'accordion' && Array.isArray(value.items)) {
     value.items.forEach((item, index) => {
       const holder = record(item)

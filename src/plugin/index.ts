@@ -101,7 +101,7 @@ Allowed \`type\` values; the \`genui\` skill, when available, carries the full c
 - 布局: text · row · col · grid · card · carousel · divider · spacer · hero（兼容旧界面，不作为默认封面）
 - 展示: badge · stat · progress · list · table · keyvalue · timeline · file-tree · breadcrumb · callout · steps · diff · json · code · copy · avatar · image · image-group · audio · video · icon · blocks · arrow
 - 图表: chart {"kind":"bars|line|donut","data":[{"label":"...","value":n}]}（series：bars 分组/堆叠 / line 多序列） · echart (preset 名或 option 直通，清单见 skill) · plot (函数图) · svg (单图预览)
-- 交互: button · input · textarea · select · checkbox · switch · slider · radio · submit · quiz · link · tabs · accordion（row.justify / col.width / card.flat 见图元）
+- 交互: button · input · textarea · select · checkbox · switch · slider · radio · submit · quiz · link · tabs · accordion · stepper（分步内容与本地翻页）
 - 高级: mermaid (流程图/时序/甘特/ER 等，关键字见 skill) · diagram (架构/流程图) · scene3d (3D WebGL)
 
 **选择 UI 的依据**：用户要操作、筛选、比较、观察变化，或图形能清楚表达空间关系时使用。短回答、普通状态更新、几个要点可以直接用正文。不要为了数字或条目数量强制生成界面。先确定用户要完成的事，再选择组件。

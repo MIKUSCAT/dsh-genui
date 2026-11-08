@@ -121,6 +121,9 @@ export function countSpecKinds(spec: GenuiSpec): { charts: number, advanced: num
       if (Array.isArray((v as { tabs?: unknown }).tabs)) {
         for (const tab of (v as { tabs: Array<{ items?: unknown }> }).tabs) walk(tab.items)
       }
+      if (type === 'stepper' && Array.isArray(v.steps)) {
+        for (const step of v.steps as Array<{ items?: unknown }>) walk(step.items)
+      }
     }
   }
   walk(spec.items)

@@ -61,6 +61,8 @@ export interface AnswersState {
   setAnswer: (group: string, choice: string) => void
   setMultiAnswer: (group: string, choice: string, checked: boolean) => void
   setField: (id: string, value: string) => void
+  stepperSteps?: Readonly<Record<string, number>>
+  setStepperStep?: (key: string, index: number) => void
   clear: () => void
   setLocked: (locked: boolean) => void
 }

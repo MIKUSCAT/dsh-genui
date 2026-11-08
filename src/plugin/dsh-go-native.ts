@@ -151,9 +151,9 @@ export function installDshGoNative(ctx: Context): void {
           for (const group of groups) {delete state.fields[group];delete state.choices[group]}
           delete state.feedback[key]
           modelAction = node.resetAction;payload = {type:'submit-reset',groups}
-        } else if (kind === 'tab' && node.type === 'tabs') {
+        } else if (kind === 'tab' && (node.type === 'tabs' || node.type === 'stepper')) {
           const index = typeof value.value === 'string' ? Number(value.value):NaN
-          if (!Number.isSafeInteger(index) || index < 0 || index >= node.tabs.length) return toast(en ? 'Invalid choice.':'选项无效。')
+          if (!Number.isSafeInteger(index) || index < 0 || index >= (node.type === 'tabs' ? node.tabs.length : node.steps.length)) return toast(en ? 'Invalid choice.':'选项无效。')
           state.tabs[key] = index
         } else if (kind === 'accordion' && node.type === 'accordion') {
           if (!Array.isArray(value.values) || value.values.some(v => typeof v !== 'string' || !/^(0|[1-9]\d*)$/u.test(v) || Number(v) >= node.items.length)) return toast(en ? 'Invalid choice.':'选项无效。')

@@ -25,6 +25,10 @@ export function walkGenuiNodes(spec: GenuiSpec, visitor: (node: GenuiNode, path:
       case 'tabs':
         node.tabs.forEach((tab, tabIndex) => walk(tab.items, `${at}.tabs[${tabIndex}].items`, depth + 1))
         break
+      case 'stepper':
+        node.steps.slice(0, GENUI_LIMITS.maxStepperSteps).forEach((step, stepIndex) =>
+          walk(step.items, `${at}.steps[${stepIndex}].items`, depth + 1))
+        break
       case 'accordion':
         node.items.forEach((item, itemIndex) => walk(item.items, `${at}.items[${itemIndex}].items`, depth + 1))
         break

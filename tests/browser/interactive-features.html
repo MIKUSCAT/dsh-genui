@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GenUI</title>
+  <style>
+    body { margin: 0; background: #faf9f5; }
+    body[data-ds-dark-theme] { background: #262624; }
+    #app { width: min(760px, calc(100% - 32px)); margin: 40px auto; }
+    #results, #browser-errors { display: none; }
+    iframe { width: 100%; height: 1000px; border: 0; }
+    @media(max-width:560px) { #app { width: 100%; margin: 16px auto; } }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <pre id="results">pending</pre>
+  <pre id="browser-errors"></pre>
+  <script type="module" src="./interactive-features.tsx"></script>
+</body>
+</html>

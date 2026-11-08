@@ -208,7 +208,7 @@ export function createRenderUiTool(): ToolDefinition {
     description:
       'Render an interactive UI card in the conversation tool row by passing a GenUI spec (a white-listed component tree; the same vocabulary as the ```dsh-ui fence, see the system prompt). '
       + 'Use it when the user asks for a structured panel, dashboard, or form that belongs in the tool row rather than inline in the reply. '
-      + 'The card is interactive client-side (tabs, buttons, inputs, switches); components carrying an "action" field send [genui-action] back to you when the user interacts, and you should re-render the updated UI.',
+      + 'The card is interactive client-side (tabs, steppers, buttons, inputs, switches). Stepper navigation stays local. Components carrying an "action" field send [genui-action] back to you when the user interacts, and you should re-render the updated UI.',
     parameters: RENDER_UI_PARAMETERS,
     output: {
       schema: RENDER_UI_OUTPUT_SCHEMA,

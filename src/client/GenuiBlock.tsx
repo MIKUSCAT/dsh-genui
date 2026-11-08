@@ -20,6 +20,7 @@ import { compileSubmissionRegistry } from './submission-registry.ts'
 import { evaluateComputed, resolveComputedSpec } from './computed.ts'
 import { parseDecimalNumber } from './safe-math.ts'
 import { walkGenuiNodes } from './walk-spec.ts'
+import { normalizeStepperState } from './stepper-state.ts'
 import { repairMap } from './map-data.ts'
 
 export const GENUI_ACTION_DEBOUNCE_MS = 300
@@ -99,6 +100,8 @@ function GenuiBlockInstance({ spec, stateKey, animateEntrance = false, initialSt
   const [persisted] = useState(() => initialState ?? (onStateChange !== undefined || stateKey === undefined ? null : loadBlockState(stateKey)))
   const [storedAnswers, setAnswers] = useState<Record<string, string>>(persisted?.answers ?? {})
   const [storedMultiAnswers, setMultiAnswers] = useState<Record<string, string[]>>(persisted?.multiAnswers ?? {})
+  const [storedStepperSteps, setStepperSteps] = useState<Record<string, number>>(persisted?.stepperSteps ?? {})
+  const stepperSteps = useMemo(() => normalizeStepperState(spec, storedStepperSteps), [spec, storedStepperSteps])
   const fieldKinds = useMemo(() => {
     const numeric = new Set<string>()
     const secret = new Set<string>()
@@ -205,12 +208,16 @@ function GenuiBlockInstance({ spec, stateKey, animateEntrance = false, initialSt
     setLocked(false)
     setRound(r => r + 1) // radios remount (key carries the round) with clean selections
   }, [])
+  const setStepperStep = useCallback((key: string, index: number) => {
+    if (!Number.isSafeInteger(index) || index < 0) return
+    setStepperSteps(previous => previous[key] === index ? previous : { ...previous, [key]: index })
+  }, [])
   const answersState = useMemo<AnswersState>(
     () => ({
       answers, multiAnswers, fields, secretFields, invalidNumericFields, registry: submissionRegistry, locked, round,
-      setAnswer, setMultiAnswer, setField, clear, setLocked,
+      setAnswer, setMultiAnswer, setField, clear, setLocked, stepperSteps, setStepperStep,
     }),
-    [answers, multiAnswers, fields, secretFields, invalidNumericFields, submissionRegistry, locked, round, setAnswer, setMultiAnswer, setField, clear],
+    [answers, multiAnswers, fields, secretFields, invalidNumericFields, submissionRegistry, locked, round, setAnswer, setMultiAnswer, setField, clear, stepperSteps, setStepperStep],
   )
   const durableState = useMemo(() => {
     const safeFields = Object.fromEntries(Object.entries(fields).filter(([id]) => !secretFields.has(id)))
@@ -219,8 +226,9 @@ function GenuiBlockInstance({ spec, stateKey, animateEntrance = false, initialSt
       ...(Object.keys(multiAnswers).length > 0 ? { multiAnswers } : {}),
       locked,
       ...(Object.keys(safeFields).length > 0 ? { fields: safeFields } : {}),
+      ...(Object.keys(stepperSteps).length > 0 ? { stepperSteps } : {}),
     }
-  }, [answers, multiAnswers, locked, fields, secretFields])
+  }, [answers, multiAnswers, locked, fields, secretFields, stepperSteps])
   useEffect(() => {
     onStateSnapshot?.(durableState)
   }, [durableState, onStateSnapshot])

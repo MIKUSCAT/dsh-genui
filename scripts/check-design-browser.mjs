@@ -22,12 +22,25 @@ if (!browser) throw new Error('Set BROWSER_BIN to an installed Chrome or Chromiu
 await mkdir(out, { recursive: true })
 const server = await createServer({
   root, configFile: false,
+  plugins: [{
+    name: 'raw-offline-fixture',
+    configureServer(instance) {
+      instance.middlewares.use((request, response, next) => {
+        if (request.url !== '/.e2e-artifacts/preview/stepper-resume.html') return next()
+        // Serve the exact exported bytes, with their original CSP and bootstrap.
+        readFile(join(root, '.e2e-artifacts/preview/stepper-resume.html')).then(html => {
+          response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
+          response.end(html)
+        }).catch(() => { response.statusCode = 404; response.end('Run pnpm preview first.') })
+      })
+    },
+  }],
   server: { host: '127.0.0.1', port: 0, strictPort: true, watch: null },
   resolve: {
     dedupe: ['react', 'react-dom'],
     alias: [{ find: /^(?:.*\/)?primitive-adapter\.ts$/, replacement: join(root, 'src/client/standalone/primitive-adapter.tsx') }],
   },
-  optimizeDeps: { entries: ['tests/browser/personal-style.html'], include: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-dom', 'react-dom/client', 'katex'] },
+  optimizeDeps: { entries: ['tests/browser/personal-style.html', 'tests/browser/interactive-features.html'], include: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-dom', 'react-dom/client', 'katex'] },
 })
 const cases = [
   { name: 'budget-light', width: 1000, height: 860, query: '' },
@@ -38,6 +51,13 @@ const cases = [
   { name: 'chart-light', width: 1000, height: 700, query: '?fixture=chart' },
   { name: 'chart-dark', width: 1000, height: 700, query: '?fixture=chart&theme=dark' },
   { name: 'table-mobile', width: 430, height: 700, query: '?fixture=table&width=430' },
+  { name: 'stepper-light', width: 1000, height: 1000, page: 'interactive-features.html', query: '?mode=stepper' },
+  { name: 'stepper-dark', width: 1000, height: 1000, page: 'interactive-features.html', query: '?mode=stepper&theme=dark' },
+  { name: 'stepper-mobile', width: 430, height: 1100, page: 'interactive-features.html', query: '?mode=stepper&width=430' },
+  { name: 'threshold-light', width: 1000, height: 900, page: 'interactive-features.html', query: '?mode=threshold' },
+  { name: 'threshold-dark', width: 1000, height: 900, page: 'interactive-features.html', query: '?mode=threshold&theme=dark' },
+  { name: 'threshold-mobile', width: 430, height: 1000, page: 'interactive-features.html', query: '?mode=threshold&width=430' },
+  { name: 'stepper-offline', width: 1000, height: 1100, page: 'interactive-features.html', query: '?mode=offline' },
 ]
 const summary = []
 const decode = value => value.replaceAll('&quot;', '"').replaceAll('&#39;', "'")
@@ -55,7 +75,7 @@ try {
         '--user-data-dir=' + profile, '--virtual-time-budget=7000',
         '--window-size=' + item.width + ',' + item.height,
         '--screenshot=' + join(out, item.name + '.png'), '--dump-dom',
-        'http://127.0.0.1:' + address.port + '/tests/browser/personal-style.html' + item.query,
+        'http://127.0.0.1:' + address.port + '/tests/browser/' + (item.page ?? 'personal-style.html') + item.query,
       ], { timeout: 30000, maxBuffer: 8 * 1024 * 1024, windowsHide: true })
       await writeFile(join(out, item.name + '.html'), stdout)
       await writeFile(join(out, item.name + '.log'), stderr)
@@ -63,6 +83,7 @@ try {
       const errors = /<pre id="browser-errors">([^<]*)<\/pre>/.exec(stdout)?.[1]
       if (!result || result === 'pending' || errors) throw new Error(item.name + ': ' + (errors || 'fixture did not finish'))
       const checks = JSON.parse(decode(result))
+      if (!Array.isArray(checks) || !checks.length) throw new Error(item.name + ': no checks ran')
       summary.push({ name: item.name, checks })
       console.log(item.name + ': ' + checks.filter(check => check.pass).length + '/' + checks.length)
       await readFile(join(out, item.name + '.png'))

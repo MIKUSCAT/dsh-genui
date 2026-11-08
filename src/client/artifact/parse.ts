@@ -2,6 +2,7 @@ import { processGenuiSpec } from '../guard.ts'
 import type { BlockInteractionState } from '../interaction-store.ts'
 import { GENUI_ARTIFACT_FORMAT, GENUI_ARTIFACT_VERSION, type GenuiArtifactTheme, type GenuiArtifactV1 } from './types.ts'
 import { createGenuiArtifact } from './create.ts'
+import { GENUI_LIMITS } from '../genui-runtime/limits.ts'
 
 /** 判断值是否为普通记录对象。 */
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -14,6 +15,8 @@ function validState(value: unknown): boolean {
   if (value.answers !== undefined && (!isRecord(value.answers) || !Object.values(value.answers).every(item => typeof item === 'string'))) return false
   if (value.multiAnswers !== undefined && (!isRecord(value.multiAnswers) || !Object.values(value.multiAnswers).every(item => Array.isArray(item) && item.every(entry => typeof entry === 'string')))) return false
   if (value.locked !== undefined && typeof value.locked !== 'boolean') return false
+  if (value.stepperSteps !== undefined && (!isRecord(value.stepperSteps) || !Object.values(value.stepperSteps).every(index =>
+    typeof index === 'number' && Number.isSafeInteger(index) && index >= 0 && index < GENUI_LIMITS.maxStepperSteps))) return false
   return value.fields === undefined || (isRecord(value.fields) && Object.values(value.fields).every(item => typeof item === 'string'))
 }
 

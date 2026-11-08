@@ -1,7 +1,7 @@
 {
   "name": "@mikuscat/dsh-genui",
   "description": "MIKUSCAT GenUI for DeepSeek Harness. Warm, restrained interactive interfaces with clear spacing, local calculations, charts and forms.",
-  "version": "0.15.0-miku.1",
+  "version": "0.16.0-miku.1",
   "icon": "./assets/genui-icon.svg",
   "type": "module",
   "main": "lib/index.js",

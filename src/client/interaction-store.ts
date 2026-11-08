@@ -25,6 +25,8 @@ export interface BlockInteractionState {
   locked?: boolean
   /** field id → current value (input/textarea with an `id`). */
   fields?: Record<string, string>
+  /** Stepper occurrence key → selected stage index. */
+  stepperSteps?: Record<string, number>
 }
 
 const STORE_KEY = 'dsh.genui.interaction'

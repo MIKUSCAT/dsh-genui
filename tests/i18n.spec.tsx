@@ -150,10 +150,12 @@ describe('content builders follow the active locale', () => {
   it('templates render in English and in Chinese', () => {
     setLocale('en')
     const en = genuiTemplates()
-    expect(en[0]!.name).toBe('Project dashboard')
+    expect(en.find(item => item.id === 'tpl-dashboard')!.name).toBe('Project dashboard')
+    expect(en.find(item => item.id === 'tpl-stepper')!.name).toBe('Binary search walkthrough')
     setLocale('zh')
     const zh = genuiTemplates()
-    expect(zh[0]!.name).toBe('项目仪表盘')
+    expect(zh.find(item => item.id === 'tpl-dashboard')!.name).toBe('项目仪表盘')
+    expect(zh.find(item => item.id === 'tpl-stepper')!.name).toBe('二分查找推演')
     // Same ids and categories either way — only the display text changes.
     expect(en.map(x => x.id)).toEqual(zh.map(x => x.id))
     expect(en.map(x => x.category)).toEqual(zh.map(x => x.category))
