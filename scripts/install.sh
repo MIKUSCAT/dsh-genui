@@ -1,5 +1,5 @@
 #!/bin/sh
-# dsh-genui 一键安装脚本（通过 npm 公开包安装，无需 npm 账号）
+# dsh-genui 一键安装脚本（通过 GitHub Release 安装，无需 npm 账号）
 #
 # 用法:
 #   ./scripts/install.sh            # 装进默认 web profile
@@ -23,7 +23,7 @@ if [ "$fail_early" = 1 ]; then
   exit 1
 fi
 
-PACKAGE_SPEC="@changfenhuang/dsh-genui"
+PACKAGE_SPEC="${GENUI_PACKAGE_SPEC:-https://github.com/MIKUSCAT/dsh-genui/releases/latest/download/dsh-genui.tgz}"
 DSH_HOME="${DSH_HOME:-$HOME/.dsh}"
 # Web 会话的 skill 服务从 agentsHome（默认 ~/.agents）发现技能，dshHome 的
 # ~/.dsh/skills 在部分宿主演进中不再进入会话目录 —— 两个根都同步，模型从哪
@@ -92,7 +92,7 @@ sync_skill() {
   SKILL_FILE=$(cd "$DSH_HOME" && DSH_HOME="$DSH_HOME" PROFILE="$PROFILE" node -e "
 const path = require('path')
 try {
-  const pkg = require.resolve('@changfenhuang/dsh-genui/package.json', { paths: [process.env.DSH_HOME + '/profiles/' + process.env.PROFILE] })
+  const pkg = require.resolve('@mikuscat/dsh-genui/package.json', { paths: [process.env.DSH_HOME + '/profiles/' + process.env.PROFILE] })
   console.log(path.join(path.dirname(pkg), 'SKILL.md'))
 } catch { process.exit(1) }
 " 2>/dev/null || true)
@@ -120,10 +120,10 @@ ok "pnpm: $(pnpm --version)"
 
 # ── 已装检测（幂等）────────────────────────────────────────────────────────
 PROFILE_PKG="$DSH_HOME/profiles/$PROFILE/package.json"
-if [ -f "$PROFILE_PKG" ] && grep -q "dsh-genui" "$PROFILE_PKG" 2>/dev/null; then
+if [ -f "$PROFILE_PKG" ] && grep -q '"@mikuscat/dsh-genui"' "$PROFILE_PKG" 2>/dev/null; then
   warn "插件已在 profile '$PROFILE' 中。"
   sync_skill
-  printf "  想重装就手动执行: dsh plugin --profile %s remove @changfenhuang/dsh-genui，再跑本脚本。\n" "$PROFILE"
+  printf "  想重装就手动执行: dsh plugin --profile %s remove @mikuscat/dsh-genui，再跑本脚本。\n" "$PROFILE"
   printf "  否则直接: 重启 dsh web + 硬刷新 即可验证。\n"
   exit 0
 fi

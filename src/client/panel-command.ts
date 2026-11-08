@@ -40,7 +40,6 @@ export function defaultPanelSpec(): GenuiSpec {
     title: t('panel.title.default'),
     items: [
       { type: 'text', size: 'h3', content: t('panel.default.heading') },
-      { type: 'text', size: 'muted', content: t('panel.default.subtitle') },
       {
         type: 'grid', cols: 4, items: [
           { type: 'stat', label: t('panel.default.stat.components'), value: '38' },

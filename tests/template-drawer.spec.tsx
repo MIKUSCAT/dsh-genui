@@ -43,7 +43,7 @@ describe('TemplateDrawer', () => {
     // Demo 预览由 GenuiBlock 渲染：首屏应有示例标题与 stat 标签
     const preview = document.querySelector('[data-genui-template-preview]')
     expect(preview).toBeTruthy()
-    expect(screen.getByText('本周关键指标')).toBeTruthy()
+    expect(preview?.textContent).toContain('本周完成')
     expect(screen.getByRole('button', { name: '试用：插入输入框' })).toBeTruthy()
     expect(screen.getByRole('button', { name: /复制指令/ })).toBeTruthy()
   })

@@ -1,160 +1,145 @@
-/* GenuiBlock: the ```dsh-ui fence renders as an inline component block in the
-   conversation. Design system v2 (0.5.0): every geometry and color decision
-   resolves through the token layer below, which converges the old grab-bag of
-   sizes/gaps/radii (17 font sizes, 6 radii, 10+ gap values, 13 tint levels)
-   into five scales:
-
-   · type      mega 52 / stat-hero 44 / stat 34 / display 28 / h1 24 / h2 19 /
-               h3 16 / body 14.5 / title 13.5 / meta 12.5 / data 12 (v11)
-   · spacing   4 · 8 · 12 · 16 · 24 (--dsl-g-gap-*; 24 is the section step)
-   · motion    fast 0.15s / grow 0.6s / reveal 0.45s on one ease-out curve (v11)
-   · radius    surface 12 · control 8 · pill 999
-   · color     one brand accent for interaction+data; success/warn/error only
-               for state; tints normalized to 8% (subtle) / 14% (strong)
-   · surfaces  components only (card/quiz/plot/accordion…) — the fence block
-               itself stays transparent inline; no slab around every fence
-
-   All colors come from the --dsw-alias-* / --dsw-static-* host tokens; the
-   literals here are only last-resort fallbacks for hosts without the token
-   sheets. */
-
-/* Dark theme: the page is near-black, so the card is lifted by the host's own
-   layer step (layer-2) plus a small 4% overlay of the theme's label colour.
-   Light mode uses no tint at all — see the token block below for why. */
-body[data-ds-dark-theme] .block,
-body[data-ds-dark-theme] .panel {
-  --dsl-g-surface: color-mix(in srgb, var(--dsw-alias-label-primary) 4%,
-    var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1, var(--dsw-alias-markdown-code-block, transparent))));
-  --dsl-g-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.24), 0 8px 24px rgba(0, 0, 0, 0.18);
-  /* A hue over a near-black page loses more contrast than the same hue over
-     white (the base colour is already dark), so the surface wash needs a
-     higher alpha to read at all: 18% dark against 12% light. `tint-strong`
-     is deliberately NOT bumped: it drives focus glow and data accents, whose
-     weight was tuned separately. */
-  --dsl-g-tint: 18%;
-  --dsl-g-tint-quiet: 12%;
-}
-
+/* GenUI / MIKUSCAT. A warm, quiet surface scoped to the plugin.
+ * Colour roles are based on the public Anthropic web palette. DSH aliases are
+ * rebound only inside these roots; the conversation and other plugins keep
+ * their host theme. Canvas charts read the same inherited aliases.
+ */
 .block,
-.panel {
-  /* ── design tokens (design system v2) ──
-     Declared on both the inline fence root and the session panel root: the
-     panel header sits OUTSIDE the inner .block, so without the shared
-     declaration its --dsl-g-* references resolved to undefined (the badge
-     gap/padding collapsed to zero). */
+.panel,
+.artifactTheme {
+  --dsl-g-canvas: #faf9f5;
+  --dsl-g-surface: #ffffff;
+  --dsl-g-sunken: #f0eee6;
+  --dsl-g-ink: #141413;
+  --dsl-g-ink-secondary: #5e5d59;
+  --dsl-g-ink-tertiary: #73726c;
+  --dsl-g-border: #e8e6dc;
+  --dsl-g-border-strong: #d1cfc5;
+  --dsl-g-border-surface: var(--dsl-g-border);
+  --dsl-g-accent: #b55234;
+  --dsl-g-chart-clay: #d97757;
+  --dsl-g-success: #427154;
+  --dsl-g-warning: #91651f;
+  --dsl-g-danger: #b24d46;
+  --dsl-g-info: #527b9a;
+
+  --dsw-alias-bg-base: var(--dsl-g-canvas);
+  --dsw-alias-bg-layer-1: var(--dsl-g-surface);
+  --dsw-alias-bg-layer-2: var(--dsl-g-surface);
+  --dsw-alias-bg-layer-3: var(--dsl-g-sunken);
+  --dsw-alias-bg-overlay: var(--dsl-g-surface);
+  --dsw-alias-label-primary: var(--dsl-g-ink);
+  --dsw-alias-label-secondary: var(--dsl-g-ink-secondary);
+  --dsw-alias-label-tertiary: var(--dsl-g-ink-tertiary);
+  --dsw-alias-label-caption: var(--dsl-g-ink-tertiary);
+  --dsw-alias-label-primary-inverted: var(--dsl-g-canvas);
+  --dsw-alias-border-l1: var(--dsl-g-border);
+  --dsw-alias-border-l2: var(--dsl-g-border-strong);
+  --dsw-alias-border-l3: var(--dsl-g-border-strong);
+  --dsw-alias-markdown-hr: var(--dsl-g-border);
+  --dsw-alias-markdown-code-block: var(--dsl-g-sunken);
+  --dsw-alias-fill-hover: var(--dsl-g-sunken);
+  --dsw-alias-state-business-primary: var(--dsl-g-accent);
+  --dsw-alias-state-business-secondary: var(--dsl-g-accent);
+  --dsw-alias-state-business-tertiary: var(--dsl-g-sunken);
+  --dsw-alias-state-success-primary: var(--dsl-g-success);
+  --dsw-alias-state-success-secondary: var(--dsl-g-success);
+  --dsw-alias-state-success-tertiary: var(--dsl-g-sunken);
+  --dsw-alias-state-warn-primary: var(--dsl-g-warning);
+  --dsw-alias-state-warn-secondary: var(--dsl-g-warning);
+  --dsw-alias-state-warn-label: var(--dsl-g-warning);
+  --dsw-alias-state-warn-tertiary: var(--dsl-g-sunken);
+  --dsw-alias-state-error-primary: var(--dsl-g-danger);
+  --dsw-alias-state-error-secondary: var(--dsl-g-danger);
+  --dsw-static-deepseek-400: var(--dsl-g-chart-clay);
+  --dsw-static-deepseek-450: #9b8aa6;
+  --dsw-static-deepseek-300: #a89777;
+  --dsw-static-blue-450: #6a9bcc;
+  --dsw-static-green-400: #788c5d;
+  --dsw-static-amber-400: #bb9655;
+  --dsw-static-red-400: #b97976;
+  --dsw-static-neutral-bluish-400: #8e918c;
+
   --dsl-g-radius-surface: 12px;
   --dsl-g-radius-control: 8px;
   --dsl-g-radius-sm: 6px;
   --dsl-g-radius-pill: 999px;
-
-  /* Design system v4: the v3 scale was too compressed — every level sat
-     within 26..12px, so nothing dominated. v4 restores a display contrast
-     (34/28/24/19/16) against a 14.5px body, and the reading floor stays 12px.
-     v11 names the three big figures by their OWNER: stat values, the single
-     hero stat, and the hero cover's mega figure are three different jobs on
-     one scale (before v11: "--dsl-g-font-hero", a bare 44px and a bare 52px).
-     宿主内容字号超过 17px 后按比例放大；原字号作为下限，保留默认设置下的层级。 */
-  --dsl-g-font-stat: max(34px, calc(var(--dsh-content-font-size, 14px) * 2));
-  --dsl-g-font-stat-hero: max(44px, calc(var(--dsh-content-font-size, 14px) * 2.588235294));
-  --dsl-g-font-mega: max(52px, calc(var(--dsh-content-font-size, 14px) * 3.058823529));
-  --dsl-g-font-display: max(28px, calc(var(--dsh-content-font-size, 14px) * 1.647058824));
-  --dsl-g-font-h1: max(24px, calc(var(--dsh-content-font-size, 14px) * 1.411764706));
-  --dsl-g-font-h2: max(19px, calc(var(--dsh-content-font-size, 14px) * 1.117647059));
-  --dsl-g-font-h3: max(16px, calc(var(--dsh-content-font-size, 14px) * 0.941176471));
-  --dsl-g-font-body: max(14.5px, calc(var(--dsh-content-font-size, 14px) * 0.852941176));
-  --dsl-g-font-title: max(13.5px, calc(var(--dsh-content-font-size, 14px) * 0.794117647));
-  --dsl-g-font-meta: max(12.5px, calc(var(--dsh-content-font-size, 14px) * 0.735294118));
-  --dsl-g-font-data: max(12px, calc(var(--dsh-content-font-size, 14px) * 0.705882353));
-
-  --dsl-g-gap-lg: 16px;
-  --dsl-g-gap-xl: 24px;
-  --dsl-g-gap-md: 12px;
-  --dsl-g-gap-sm: 8px;
+  --dsl-g-font-stat: max(32px, calc(var(--dsh-content-font-size, 15px) * 2));
+  --dsl-g-font-stat-hero: max(40px, calc(var(--dsh-content-font-size, 15px) * 2.5));
+  --dsl-g-font-mega: max(44px, calc(var(--dsh-content-font-size, 15px) * 2.75));
+  --dsl-g-font-display: max(28px, calc(var(--dsh-content-font-size, 15px) * 1.75));
+  --dsl-g-font-h1: max(24px, calc(var(--dsh-content-font-size, 15px) * 1.5));
+  --dsl-g-font-h2: max(20px, calc(var(--dsh-content-font-size, 15px) * 1.25));
+  --dsl-g-font-h3: max(16px, var(--dsh-content-font-size, 15px));
+  --dsl-g-font-body: max(15px, var(--dsh-content-font-size, 15px));
+  --dsl-g-font-title: max(14px, calc(var(--dsh-content-font-size, 15px) * 0.94));
+  --dsl-g-font-meta: var(--dsl-g-font-title);
+  --dsl-g-font-data: var(--dsl-g-font-title);
+  --dsl-g-font-mono: var(--ds-font-family-code, ui-monospace, 'SF Mono', Consolas, monospace);
+  --dsl-g-font-heading: 'Iowan Old Style', 'Palatino Linotype', 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', Georgia, serif;
   --dsl-g-gap-xs: 4px;
-
-  /* Motion (v11): one deceleration curve; durations named by JOB, not by
-     component — control feedback, data growth, entrance reveal. */
+  --dsl-g-gap-sm: 8px;
+  --dsl-g-gap-md: 16px;
+  --dsl-g-gap-lg: 20px;
+  --dsl-g-gap-xl: 32px;
   --dsl-g-dur-fast: 0.15s;
-  --dsl-g-dur-grow: 0.6s;
-  --dsl-g-dur-reveal: 0.45s;
+  --dsl-g-dur-grow: 0.25s;
+  --dsl-g-dur-reveal: 0.2s;
   --dsl-g-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-
-  --dsl-g-border: var(--dsw-alias-border-l1, var(--dsw-alias-border-l2, rgba(255, 255, 255, 0.12)));
-  --dsl-g-border-strong: var(--dsw-alias-border-l2, rgba(255, 255, 255, 0.12));
-  --dsl-g-accent: var(--dsw-alias-state-business-primary, #4f8ef7);
-  --dsl-g-accent-soft: color-mix(in srgb, var(--dsl-g-accent) var(--dsl-g-tint), transparent);
-  /* Row/surface hover: a 4% wash of the theme's own label color works on
-   * dark AND light hosts without any off-brand literal. */
-  --dsl-g-hover: color-mix(in srgb, var(--dsw-alias-label-primary) 4%, transparent);
-  --dsl-g-hover-strong: color-mix(in srgb, var(--dsw-alias-label-primary) 8%, transparent);
-  /* Zebra rows / table header wash: half the hover strength, so a striped
-     table still reads as one surface rather than a stack of bands. */
-  --dsl-g-zebra: color-mix(in srgb, var(--dsw-alias-label-primary) 2.5%, transparent);
-  /* Semantic surface wash (v12). 8% was the v2 normalization, chosen when the
-     only consumer was a hover band. On a white canvas 8% of a saturated hue
-     lands under a 3% lightness step: badges, callouts, card tones and the new
-     icon plate all resolved to plain white, so every "tinted" surface read as
-     un-coloured and the block relied on its text alone. 12% light / 18% dark
-     keeps the host hue (no fixed pastels — those block dark theme) while
-     producing a visible step. `--dsl-g-tint-strong` stays at 14% for focus
-     glow and data accents; `--dsl-g-tint-quiet` keeps the old 8% for bands
-     that must not compete with content (zebra-adjacent washes). */
-  --dsl-g-tint: 12%;
-  --dsl-g-tint-quiet: 8%;
+  --dsl-g-tint: 6%;
+  --dsl-g-tint-quiet: 4%;
   --dsl-g-tint-strong: 14%;
-  --dsl-g-font-mono: var(--ds-font-family-code, ui-monospace, 'SF Mono', monospace);
-  /* Elevation is theme-specific, because the two themes lift a card off the
-     page by OPPOSITE means:
-       light: the host maps every bg layer to white, so there is no layer step
-              to take. The card is WHITE, and the lift is carried by the 1px
-              surface border plus the shadow — the shadow branch of the
-              documented rule "adjacent light surfaces need a >=4% lightness
-              step OR a shadow of at least 0 1px 3px rgba(0,0,0,0.10)".
-       dark : the page is near-black and drop shadows are nearly invisible
-              there, so the layer step + a 4% label overlay do the lifting
-              (see the dark override above).
-     Do NOT darken the light surface to make it "visible": a card below the
-     page's lightness reads as recessed/disabled, not elevated. 0.10.0 shipped
-     exactly that — a 10% label tint (= #e7e7e8, page 255) reported in issue
-     #159 as "every card is grey". The 1px border keeps its 12% weight and is
-     drawn over the surface, so on white it resolves to a quiet #e2e2e3
-     hairline instead of 0.10.0's #cdcdce. */
-  --dsl-g-surface: var(--dsw-alias-bg-layer-2,
-    var(--dsw-alias-bg-layer-1, var(--dsw-alias-markdown-code-block, #fff)));
-  /* Borders separate, shadows lift (design standard: "shadows over borders"):
-     the outline stays quiet and the layered shadow carries the depth, with the
-     first layer at the documented minimum `0 1px 3px rgba(0,0,0,0.10)`. */
-  --dsl-g-border-surface: color-mix(in srgb, var(--dsw-alias-label-primary) 12%, transparent);
-  --dsl-g-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.10), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --dsl-g-accent-soft: color-mix(in srgb, var(--dsl-g-accent) var(--dsl-g-tint), transparent);
+  --dsl-g-hover: color-mix(in srgb, var(--dsl-g-ink) 4%, transparent);
+  --dsl-g-hover-strong: color-mix(in srgb, var(--dsl-g-ink) 8%, transparent);
+  --dsl-g-zebra: color-mix(in srgb, var(--dsl-g-ink) 2%, transparent);
+  --dsl-g-shadow-card: none;
+  color: var(--dsl-g-ink);
+  font-family: var(--dsh-content-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif);
+  font-size: var(--dsl-g-font-body);
+  line-height: 1.65;
+  color-scheme: light;
+}
+
+body[data-ds-dark-theme] .block,
+body[data-ds-dark-theme] .panel,
+body[data-ds-dark-theme] .artifactTheme {
+  --dsl-g-canvas: #262624;
+  --dsl-g-surface: #30302e;
+  --dsl-g-sunken: #383835;
+  --dsl-g-ink: #f0eee6;
+  --dsl-g-ink-secondary: #c2c0b6;
+  --dsl-g-ink-tertiary: #b0aea5;
+  --dsl-g-border: #45453f;
+  --dsl-g-border-strong: #64645c;
+  --dsl-g-accent: #e9a58d;
+  --dsl-g-success: #97b58a;
+  --dsl-g-warning: #d6b271;
+  --dsl-g-danger: #e3978f;
+  --dsl-g-info: #97b6d0;
+  color-scheme: dark;
 }
 
 .block {
-  /* Inline in the conversation: no canvas, no border, no padding — the
-     components themselves (card/quiz/plot/…) carry the surfaces. A slab
-     around every fence was tried and rejected: a lone stat or text node
-     does not need a card wrapper. */
-  margin: 8px 0;
-  color: var(--dsw-alias-label-primary);
-  /* Numbers line up wherever they appear (stats, tables, progress, legends). */
+  container: genui / inline-size;
+  margin: 20px 0;
+  padding: 24px;
+  border-radius: var(--dsl-g-radius-surface);
+  background: var(--dsl-g-canvas);
   font-variant-numeric: tabular-nums;
+  min-width: 0;
 }
-/* Content-box padding made a <select> and an <input> with the same
-   width:100% measure 365 vs 391px. One reset inside our subtree. */
+.panel .block { margin: 0; padding: 0; }
 .block *, .block *::before, .block *::after,
 .panel *, .panel *::before, .panel *::after { box-sizing: border-box; }
 
 .banner {
-  /* Hierarchy through type, not decoration: the fence title reads as the page
-     heading (h1, 800) with a section-scale breath below it (gap-xl, v11) —
-     components under it start a new "chapter", not another row. The accent
-     bars v4 added read as PPT chrome and are gone. */
+  font-family: var(--dsl-g-font-heading);
   font-size: var(--dsl-g-font-h1);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--dsw-alias-label-primary);
-  padding-bottom: var(--dsl-g-gap-md);
-  margin-bottom: var(--dsl-g-gap-xl);
-  border-bottom: 1px solid var(--dsl-g-border);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  color: var(--dsl-g-ink);
+  margin-bottom: 24px;
 }
 
 /* ---------- layout primitives ---------- */
@@ -229,24 +214,14 @@ body[data-ds-dark-theme] .panel {
    (a single donut next to a tall table) kept its content pinned to the top and
    left a large dead block underneath. The last child absorbs the extra height,
    and the graphic shapes centre themselves inside it. */
-.card > :last-child { flex: 1 1 auto; min-height: 0; }
+.card > :last-child { min-height: 0; }
 .card > .chart,
 .card > .lineChart,
 .card > .donut,
-.card > .hbars { justify-content: center; }
-.card > .col { justify-content: center; }
+.card > .hbars { justify-content: flex-start; }
+.card > .col { justify-content: flex-start; }
 
-.cardTitle {
-  /* Was 12.5px uppercase with tracking while the card BODY is 14.5px: the
-     title read as a small grey label, which is why nothing scanned. A card
-     title is a section heading, so it sits above body size, sentence case,
-     no tracking. The 12.5px uppercase treatment belongs to eyebrows only. */
-  font-size: var(--dsl-g-font-h3);
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: var(--dsw-alias-label-secondary);
-}
+.cardTitle { font-size: var(--dsl-g-font-h3); font-weight: 600; line-height: 1.45; color: var(--dsl-g-ink); }
 
 /* Card eyebrow (`card.eyebrow`, B3): the heroLabel language on a card — meta
    uppercase overline for chaptering a card GROUP. Sparingly: not every card
@@ -264,7 +239,7 @@ body[data-ds-dark-theme] .panel {
 .text { color: var(--dsw-alias-label-primary); white-space: pre-line; }
 .text.h1 {
   font-size: var(--dsl-g-font-h1);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.02em;
 }
@@ -280,16 +255,11 @@ body[data-ds-dark-theme] .panel {
    visible gaps between Han characters). */
 /* ~65ch keeps a comfortable reading measure when the block is wide. */
 .text.body { font-size: var(--dsl-g-font-body); line-height: 1.7; color: var(--dsw-alias-label-primary); text-wrap: pretty; max-width: 68ch; }
-.text.muted { font-size: var(--dsl-g-font-title); line-height: 1.65; color: var(--dsw-alias-label-secondary); }
-.text.caption { font-size: var(--dsl-g-font-meta); line-height: 1.6; color: var(--dsw-alias-label-secondary); }
+.text.muted { font-size: var(--dsl-g-font-body); line-height: 1.65; color: var(--dsl-g-ink); }
+.text.caption { font-size: var(--dsl-g-font-body); line-height: 1.65; color: var(--dsl-g-ink); }
 /* Display: the one-per-answer focal line (B1) — bigger than h1, carries the
    opening statement of a report; vocabulary lives on the v11 scale. */
-.text.display {
-  font-size: var(--dsl-g-font-display);
-  font-weight: 800;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-}
+.text.display { font-family: var(--dsl-g-font-heading); font-size: var(--dsl-g-font-display); font-weight: 500; line-height: 1.3; letter-spacing: -0.015em; }
 .text.center { text-align: center; }
 .text.left { text-align: left; }
 .text.right { text-align: right; }
@@ -321,7 +291,7 @@ body[data-ds-dark-theme] .panel {
    their hue; ghost washes over the surface it sits on). v11 retires the
    brightness-filter hover: filters ignored the theme's own hover language. */
 .button:hover:not(:disabled) { border-color: var(--dsl-g-accent); background-image: linear-gradient(var(--dsl-g-hover), var(--dsl-g-hover)); }
-.button.primary:hover:not(:disabled) { background: color-mix(in srgb, var(--dsl-g-accent) 92%, #fff); }
+.button.primary:hover:not(:disabled) { background: var(--dsl-g-ink-secondary); border-color: var(--dsl-g-ink-secondary); }
 /* Press feedback: a 1px sink makes every actionable control feel mechanical. */
 .button:active:not(:disabled) { transform: translateY(1px); }
 /* Display-only buttons (no action): honest disabled affordance — the
@@ -333,12 +303,7 @@ body[data-ds-dark-theme] .panel {
   box-shadow: none;
   pointer-events: none;
 }
-.button.primary {
-  background: var(--dsl-g-accent);
-  border: none;
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-}
+.button.primary { background: var(--dsl-g-ink); border: 1px solid var(--dsl-g-ink); color: var(--dsl-g-canvas); box-shadow: none; }
 .button.danger {
   background: color-mix(in srgb, var(--dsw-alias-state-error-primary, #ff6b6b) var(--dsl-g-tint), transparent);
   border-color: color-mix(in srgb, var(--dsw-alias-state-error-primary, #ff6b6b) 30%, transparent);
@@ -353,8 +318,8 @@ body[data-ds-dark-theme] .panel {
 .button.full { width: 100%; }
 .button.small { padding: 4px 12px; font-size: var(--dsl-g-font-meta); border-radius: var(--dsl-g-radius-control); }
 
-.field { display: flex; flex-direction: column; gap: var(--dsl-g-gap-xs); }
-.field > span { font-size: var(--dsl-g-font-meta); color: var(--dsw-alias-label-tertiary); }
+.field { display: flex; flex-direction: column; gap: var(--dsl-g-gap-sm); min-width: 0; }
+.field > span { font-size: var(--dsl-g-font-title); font-weight: 500; color: var(--dsl-g-ink); }
 
 .input, .select {
   background: var(--dsl-g-surface);
@@ -417,12 +382,7 @@ body[data-ds-dark-theme] .panel {
 .mediaLabel { font-size: var(--dsl-g-font-title); font-weight: 600; color: var(--dsw-alias-label-primary); }
 /* Image caption (`image.caption`, B4): the magazine note UNDER the picture —
    source, reading or credit; quieter and smaller than the alt label above. */
-.mediaCaption {
-  font-size: var(--dsl-g-font-data);
-  color: var(--dsw-alias-label-tertiary);
-  line-height: 1.5;
-  text-align: center;
-}
+.mediaCaption { font-size: var(--dsl-g-font-body); color: var(--dsl-g-ink); line-height: 1.65; text-align: left; }
 .mediaPlayer { display: block; width: 100%; min-width: 0; border-radius: var(--dsl-g-radius-control); }
 /* Reserve the box before the bytes arrive: without an intrinsic ratio an
    unloaded <img> collapses to 0px and the card looks broken. */
@@ -434,46 +394,19 @@ img.mediaPlayer { aspect-ratio: 16 / 9; object-fit: cover; background: var(--dsl
    The answer's focal point: an eyebrow, an oversized metric, a title and a
    subtitle on a soft tinted surface. Tone changes the wash, never the layout. */
 
+
 .hero {
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 22px 24px 24px;
-  border-radius: 14px;
-  border: 1px solid var(--dsl-g-border-surface);
-  background:
-    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--dsl-g-accent) 22%, transparent) 0%, transparent 58%),
-    linear-gradient(180deg, color-mix(in srgb, var(--dsl-g-accent) 7%, transparent), transparent 70%),
-    var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1, transparent));
-  overflow: hidden;
-  box-shadow: var(--dsl-g-shadow-card);
+  gap: 12px;
+  padding: 20px 0;
+  border: 0;
+  border-bottom: 1px solid var(--dsl-g-border);
+  background: transparent;
+  min-width: 0;
 }
-.heroSuccess {
-  background:
-    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--dsw-alias-state-success-primary, #3ecf8e) 20%, transparent) 0%, transparent 58%),
-    linear-gradient(180deg, color-mix(in srgb, var(--dsw-alias-state-success-primary, #3ecf8e) 6%, transparent), transparent 70%),
-    var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1, transparent));
-}
-.heroWarning {
-  background:
-    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--dsw-alias-state-warn-primary, #f5b83d) 20%, transparent) 0%, transparent 58%),
-    linear-gradient(180deg, color-mix(in srgb, var(--dsw-alias-state-warn-primary, #f5b83d) 6%, transparent), transparent 70%),
-    var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1, transparent));
-}
-.heroDanger {
-  background:
-    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--dsw-alias-state-error-primary, #ff6b6b) 18%, transparent) 0%, transparent 58%),
-    linear-gradient(180deg, color-mix(in srgb, var(--dsw-alias-state-error-primary, #ff6b6b) 6%, transparent), transparent 70%),
-    var(--dsw-alias-bg-layer-2, var(--dsw-alias-bg-layer-1, transparent));
-}
-.heroLabel {
-  font-size: var(--dsl-g-font-meta);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--dsw-alias-label-secondary);
-}
+.heroSuccess, .heroWarning, .heroDanger { background: transparent; }
+.heroLabel { font-size: var(--dsl-g-font-body); font-weight: 500; color: var(--dsl-g-ink); }
 .heroTop { display: flex; align-items: baseline; gap: var(--dsl-g-gap-md); flex-wrap: wrap; }
 .heroValue {
   display: inline-flex;
@@ -481,7 +414,7 @@ img.mediaPlayer { aspect-ratio: 16 / 9; object-fit: cover; background: var(--dsl
   gap: 4px;
   font-family: var(--dsl-g-font-mono);
   font-size: var(--dsl-g-font-mega);
-  font-weight: 750;
+  font-weight: 500;
   letter-spacing: -0.028em;
   line-height: 1;
   color: var(--dsw-alias-label-primary);
@@ -490,7 +423,7 @@ img.mediaPlayer { aspect-ratio: 16 / 9; object-fit: cover; background: var(--dsl
 .heroUnit { font-size: 0.44em; font-weight: 650; letter-spacing: 0; color: var(--dsw-alias-label-secondary); }
 .heroSpark { margin-left: auto; width: 168px; align-self: center; }
 .heroTitle { font-size: var(--dsl-g-font-h2); font-weight: 700; letter-spacing: -0.01em; color: var(--dsw-alias-label-primary); line-height: 1.3; }
-.heroSubtitle { font-size: var(--dsl-g-font-title); color: var(--dsw-alias-label-secondary); line-height: 1.6; text-wrap: pretty; }
+.heroSubtitle { font-size: var(--dsl-g-font-body); color: var(--dsl-g-ink); line-height: 1.65; }
 
 /* ---------- inline markup (inline.ts) ----------
    Emphasis that stays INSIDE a sentence: a paragraph should not have to be
@@ -555,25 +488,13 @@ img.mediaPlayer { aspect-ratio: 16 / 9; object-fit: cover; background: var(--dsl
   border-color: color-mix(in srgb, var(--dsl-g-accent) 30%, transparent);
 }
 
-.stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  /* Metric card: the number IS the design. No accent stripe, no bar — the
-     40px figure against a 12px uppercase label carries the hierarchy. */
-  padding: 14px 16px 15px;
-  border: 1px solid var(--dsl-g-border-surface);
-  border-radius: var(--dsl-g-radius-surface);
-  background: var(--dsl-g-surface);
-  min-width: 0;
-  overflow: hidden;
-  box-shadow: var(--dsl-g-shadow-card);
-}
+.stat { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; min-width: 0; background: transparent; border: 0; box-shadow: none; }
 /* Hero stat: one number is the answer's anchor (use it once per fence). */
-.statHero { padding: 18px 20px 20px; }
-.statHero .statValue { font-size: var(--dsl-g-font-stat-hero); line-height: 1.02; letter-spacing: -0.035em; }
-.statHero .statLabel { font-size: var(--dsl-g-font-title); }
-.grid > .stat, .row > .stat { border-left: 1px solid var(--dsl-g-border); }
+.statHero { padding: 8px 0; }
+.statHero .statValue { display: flex; align-items: baseline; gap: 4px; font-family: inherit; font-size: var(--dsl-g-font-stat); font-weight: 500; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; color: var(--dsl-g-ink); line-height: 1.15; overflow-wrap: anywhere; }
+.statHero .statLabel { font-size: var(--dsl-g-font-title); color: var(--dsl-g-ink-secondary); font-weight: 500; line-height: 1.5; }
+.grid > .stat, .row > .stat { padding-right: 16px; }
+.grid > .stat + .stat { padding-left: 16px; border-left: 1px solid var(--dsl-g-border); }
 .statLabel {
   font-size: var(--dsl-g-font-meta);
   color: var(--dsw-alias-label-secondary);
@@ -603,27 +524,12 @@ img.mediaPlayer { aspect-ratio: 16 / 9; object-fit: cover; background: var(--dsl
   color: var(--dsw-alias-label-secondary);
 }
 .statHero .statUnit { font-size: 0.46em; }
-.statDelta {
-  font-size: var(--dsl-g-font-meta);
-  font-weight: 600;
-  width: fit-content;
-  padding: 0 6px;
-  border-radius: var(--dsl-g-radius-pill);
-  color: var(--dsw-alias-label-secondary);
-  background: color-mix(in srgb, var(--dsw-alias-label-primary) 5%, transparent);
-}
-.statDelta.up { color: var(--dsw-alias-state-success-secondary, #1f9d63); background: color-mix(in srgb, var(--dsw-alias-state-success-primary, #22c55e) 12%, transparent); }
-.statSpark {
-  display: block;
-  width: calc(100% + 32px);
-  max-width: none;
-  height: 30px;
-  margin: 6px -16px -15px;
-  overflow: visible;
-}
-.statHero .statSpark { width: calc(100% + 40px); margin: 8px -20px -20px; }
+.statDelta { font-size: var(--dsl-g-font-title); font-weight: 400; width: fit-content; color: var(--dsl-g-ink-secondary); }
+.statDelta.up { color: var(--dsl-g-success); background: transparent; }
+.statSpark { display: block; width: 100%; height: 32px; margin: 8px 0 0; }
+.statHero .statSpark { width: 100%; margin: 8px 0 0; }
 
-.statDelta.down { color: var(--dsw-alias-state-error-primary, #d94848); background: color-mix(in srgb, var(--dsw-alias-state-error-primary, #f25a5a) 12%, transparent); }
+.statDelta.down { color: var(--dsl-g-danger); background: transparent; }
 
 .progress { display: flex; flex-direction: column; gap: var(--dsl-g-gap-sm); }
 .progressRow {
@@ -2573,4 +2479,20 @@ button.ftNameBtn[aria-expanded] { cursor: pointer; }
   border: 0;
   background: color-mix(in srgb, var(--dsl-g-tone, var(--dsl-g-accent)) var(--dsl-g-tint), transparent);
   border-radius: 10px;
+}
+
+
+/* A sidebar can be narrow on a wide monitor: respond to the surface itself. */
+@container genui (max-width: 480px) {
+  .grid { grid-template-columns: 1fr !important; }
+  .gridSpan { grid-column: auto !important; }
+  .row { flex-wrap: wrap; }
+  .row > .card, .row > .col { flex-basis: 100% !important; width: 100% !important; }
+  .grid > .stat + .stat { padding-left: 0; border-left: 0; }
+  .heroSpark { margin-left: 0; max-width: 100%; }
+}
+@media (max-width: 560px) {
+  .block { padding: 20px 16px; }
+  .gridSpan { grid-column: auto !important; }
+  .grid > .stat + .stat { padding-left: 0; border-left: 0; }
 }

@@ -7,7 +7,7 @@
  * an `icon` name that is not in the 64-glyph inline set. Keeping it here (and
  * not in the client bundle) is what stops ~1 MB of path data from riding
  * along on every conversation load.
- * @module @changfenhuang/dsh-genui/client/icons/asset-icons
+ * @module @mikuscat/dsh-genui/client/icons/asset-icons
  */
 import { ICONS_FULL } from './icon-data-full.ts'
 

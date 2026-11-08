@@ -12,7 +12,7 @@
  * names only, so "typo" degrades to the fallback dot without a network round
  * trip, while "not downloaded yet" triggers exactly one load and then
  * re-renders the mounted glyphs through the subscription below.
- * @module @changfenhuang/dsh-genui/client/icons/icon-lazy
+ * @module @mikuscat/dsh-genui/client/icons/icon-lazy
  */
 import { loadGenuiAsset } from '../asset-loader.ts'
 import { ICONS, type BundledIcon } from './icon-data.ts'

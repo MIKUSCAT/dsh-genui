@@ -18,7 +18,7 @@ import { inspectPack, verifyInstalledPack } from './exact-pack.mjs'
 import { completeSyntheticOnboarding, projectOnboardingReport } from './sidechat-onboarding.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const PLUGINS = ['@changfenhuang/dsh-genui', 'dsh-better-sidebar']
+const PLUGINS = ['@mikuscat/dsh-genui', 'dsh-better-sidebar']
 async function json(file) { return JSON.parse(await readFile(file, 'utf8')) }
 async function maybeJSON(file) { try { return await json(file) } catch (error) { if (error.code === 'ENOENT') return; throw error } }
 async function atomicJSON(file, value) { await writeFile(file + '.tmp', JSON.stringify(value) + '\n'); await rename(file + '.tmp', file) }

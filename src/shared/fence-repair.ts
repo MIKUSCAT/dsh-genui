@@ -20,7 +20,7 @@
  *   appending can recover it. NOT a separate gate: it rides tier-2's shape
  *   pass, so it is SETTLED MESSAGES ONLY and adopted only when the rewritten
  *   WHOLE body parses.
- * @module @changfenhuang/dsh-genui/shared/fence-repair
+ * @module @mikuscat/dsh-genui/shared/fence-repair
  */
 
 /** A fence body counts as complete when it parses as a whole JSON value. */

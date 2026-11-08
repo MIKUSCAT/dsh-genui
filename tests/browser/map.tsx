@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { GenuiBlock, GenuiActionContext, GenuiMapContext, setGenuiAssetBase,
-  createGenuiArtifact, buildStandaloneHtml } from '@changfenhuang/dsh-genui/embed'
-import type { GenuiSpec, BlockInteractionState } from '@changfenhuang/dsh-genui/embed'
+  createGenuiArtifact, buildStandaloneHtml } from '@mikuscat/dsh-genui/embed'
+import type { GenuiSpec, BlockInteractionState } from '@mikuscat/dsh-genui/embed'
 import { setLocale } from '@map-test/i18n'
 import { STANDALONE_THEME_CSS } from '@map-test/theme'
 // @ts-expect-error Pure JS fixture shared with the Node runner.

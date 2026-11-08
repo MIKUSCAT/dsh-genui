@@ -106,7 +106,7 @@ export async function runSidechatCI(options, { executeCommand = execute, accepta
     }
     stage = 'genui-pack-preflight'
     await verifyTarball(options.genuiTarball, options.genuiTarballSha256)
-    await inspectPack(options.genuiTarball, '@changfenhuang/dsh-genui')
+    await inspectPack(options.genuiTarball, '@mikuscat/dsh-genui')
     assert.equal(typeof options.browser?.newContext, 'function', 'Caller-owned browser is mandatory')
     const result = await withOwnedResources(async ({ own }) => {
       const root = await mkdtemp(join(tmpdir(), 'dsh354-ci-sidebar-'))

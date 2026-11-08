@@ -1,6 +1,6 @@
 /**
  * GenUI 节点诊断共享逻辑。
- * @module @changfenhuang/dsh-genui/plugin/genui-diagnostic
+ * @module @mikuscat/dsh-genui/plugin/genui-diagnostic
  */
 
 import type { GenuiProcessResult } from '../client/guard.ts'

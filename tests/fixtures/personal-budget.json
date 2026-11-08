@@ -1,0 +1,20 @@
+{
+  "title": "团队预算",
+  "computed": [
+    { "id": "monthly", "expr": "price*seats", "format": { "locale": "zh-CN", "style": "currency", "currency": "CNY", "maximumFractionDigits": 0 } },
+    { "id": "remaining", "expr": "budget-monthly", "format": { "locale": "zh-CN", "style": "currency", "currency": "CNY", "maximumFractionDigits": 0 } }
+  ],
+  "items": [
+    { "type": "grid", "cols": 2, "items": [
+      { "type": "stat", "label": "每月支出", "value": "{{monthly}}" },
+      { "type": "stat", "label": "剩余预算", "value": "{{remaining}}" }
+    ] },
+    { "type": "divider" },
+    { "type": "text", "size": "h3", "content": "费用设置" },
+    { "type": "grid", "cols": 2, "items": [
+      { "type": "input", "id": "price", "label": "每席月费 / 元", "inputType": "number", "value": "128" },
+      { "type": "input", "id": "seats", "label": "团队人数", "inputType": "number", "value": "8" }
+    ] },
+    { "type": "slider", "id": "budget", "label": "月度预算 / 元", "min": 500, "max": 5000, "step": 100, "value": 2000 }
+  ]
+}

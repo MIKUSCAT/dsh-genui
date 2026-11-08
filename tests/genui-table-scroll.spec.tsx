@@ -24,7 +24,7 @@ describe('GenUI table overflow', () => {
     const stateKey = 'table-entrance-101'
     clearBlockState(stateKey)
     const spec: GenuiSpec = { items: [{ type: 'table', columns: ['A'], rows: [[103], [86], [25]] }] }
-    const view = render(<GenuiBlock spec={spec} stateKey={stateKey} />)
+    const view = render(<GenuiBlock spec={spec} stateKey={stateKey} animateEntrance />)
     const reveal = view.container.querySelector<HTMLElement>('[class*="reveal"]')!
     expect(reveal.style.animation).not.toBe('none')
     fireEvent.animationEnd(view.container.querySelector('table')!)
@@ -38,7 +38,7 @@ describe('GenUI table overflow', () => {
     saveBlockState(stateKey, { answers: {}, locked: false })
     const restored = render(<GenuiBlock spec={spec} stateKey={stateKey} />)
     expect(restored.container.querySelector<HTMLElement>('[class*="reveal"]')!.style.animation).toBe('none')
-    restored.rerender(<GenuiBlock spec={spec} stateKey="table-entrance-new" />)
+    restored.rerender(<GenuiBlock spec={spec} stateKey="table-entrance-new" animateEntrance />)
     expect(restored.container.querySelector<HTMLElement>('[class*="reveal"]')!.style.animation).not.toBe('none')
     clearBlockState(stateKey)
   })

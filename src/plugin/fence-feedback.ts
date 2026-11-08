@@ -22,7 +22,7 @@
  *
  * 检查会复用 renderer 在回合结束后的流程，包括 JSON 修复和坏节点清理；
  * 已经可以渲染的最终回复不会收到修正请求。
- * @module @changfenhuang/dsh-genui/plugin/fence-feedback
+ * @module @mikuscat/dsh-genui/plugin/fence-feedback
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -35,7 +35,7 @@ import { resolveFence } from '../shared/fence-resolve.ts'
 import { isGenuiFenceLanguage } from '../shared/fence-language.ts'
 
 /** Plugin name recorded on every message this loop steers. */
-export const FEEDBACK_PLUGIN_NAME = '@changfenhuang/dsh-genui'
+export const FEEDBACK_PLUGIN_NAME = '@mikuscat/dsh-genui'
 /** Source kind persisted by this plugin in Session format v4. */
 export const FEEDBACK_SOURCE_KIND = `plugin:${FEEDBACK_PLUGIN_NAME}` as const
 

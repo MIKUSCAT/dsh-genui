@@ -105,7 +105,7 @@ export async function runMapAcceptance({ browser, page, readyUrl, repoRoot, tarb
         })
       } }],
       resolve: { dedupe: ['react', 'react-dom'], alias: [
-        { find: '@changfenhuang/dsh-genui/embed', replacement: join(packageRoot, pkg.exports['./embed']) },
+        { find: '@mikuscat/dsh-genui/embed', replacement: join(packageRoot, pkg.exports['./embed']) },
         { find: '@map-test/i18n', replacement: join(packageRoot, 'src/client/i18n/runtime.ts') },
         { find: '@map-test/theme', replacement: join(packageRoot, 'src/client/artifact/standalone-theme.ts') },
         { find: /^(?:.*\/)?primitive-adapter\.ts$/, replacement: join(packageRoot, 'src/client/standalone/primitive-adapter.tsx') },

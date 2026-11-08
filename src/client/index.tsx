@@ -11,7 +11,7 @@
  * streams, every FINISHED component appears the moment its JSON object
  * closes, so the UI assembles top-down before the fence (or reply) completes.
  * A body with no finished component yet falls back to a plain code block.
- * @module @changfenhuang/dsh-genui/client
+ * @module @mikuscat/dsh-genui/client
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -27,7 +27,6 @@ import { createFileLinkAvailability, withFileLinkContext, type FileLinkCordisCon
 import { createPanelSlashSource } from './panel-command.ts'
 import { GenuiPanel, type GenuiPanelInjected } from './panel.tsx'
 import { GenuiToolView } from './toolview.tsx'
-import { mountAchievementToasts } from './achievement-toast.tsx'
 import { bridgeHostLocale, t } from './i18n/index.ts'
 import type { InputTriggerServiceContract } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
 import { assetUrl } from './asset-loader.ts'
@@ -143,7 +142,6 @@ export function apply(ctx: Context): () => void {
   // use. Never blocks first paint; the loader still handles a miss.
   prefetchGenuiAssets()
   // Achievement toasts (0.9.5): a body-level stack independent of the panel.
-  disposers.push(mountAchievementToasts())
   // Keyed toolview: the harness dispatches 'tool.call.toolview' by wire tool
   // name; registering under 'render_ui' gives the tool's result card the
   // GenUI renderer (reading the repaired spec from result meta). The toolview

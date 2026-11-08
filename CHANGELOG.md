@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.15.0-miku.1
+
+Personal edition maintained by MIKUSCAT, based on upstream v0.15.0.
+
+- Warm neutral light/dark palette, restrained typography, natural card layout and container-aware grids.
+- Focused authoring skill with an on-demand component reference; removes compulsory UI quotas and ornamental copy.
+- SVG-only button/badge icon fields, quieter panel and template chrome, no automatic achievement toasts.
+- Applies row gap values, keeps existing state/action/fence contracts, and provides GitHub Release installation.
+
+
 ## [0.15.0] - 2026-10-28
 
 ### 新增

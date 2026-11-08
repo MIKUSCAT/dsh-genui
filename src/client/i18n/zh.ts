@@ -42,7 +42,7 @@ export const ZH: Record<keyof typeof EN, string> = {
   'panel.achievements.title': '探索成就：解锁徽章与进度',
   'panel.close.aria': '关闭面板',
   'panel.resize.aria': '调整面板高度',
-  'panel.hint': '💡 这是 GenUI 会话面板：点右上角「模板」可浏览并试用示例',
+  'panel.hint': ' 这是 GenUI 会话面板：点右上角「模板」可浏览并试用示例',
   'panel.boundary': '面板',
   'panel.flash.inserted': '指令已插入输入框，发送即可让模型生成',
 
@@ -362,9 +362,9 @@ export const ZH: Record<keyof typeof EN, string> = {
   // -------------------------------------------------------- error text
   'err.boundary.generic': '此界面',
   'err.boundary.fence': '该界面',
-  'err.boundary.body': '⚠️ {label}渲染失败（已隔离，不影响其他内容）',
+  'err.boundary.body': ' {label}渲染失败（已隔离，不影响其他内容）',
   'err.fieldValidation': 'GenUI 字段验证失败：{errors}',
   'err.chartValidation': 'chart 字段验证失败：{errors}',
-  'err.fenceKeptAsCode': '⚠️ dsh-ui {diagnostic} —— 围栏保持为代码块；请修正后重发。',
-  'err.fenceParse': '⚠️ dsh-ui fence JSON 解析失败 {diagnostic} —— 围栏保持为代码块；请让模型检查并修复 JSON 后重发。',
+  'err.fenceKeptAsCode': ' dsh-ui {diagnostic} —— 围栏保持为代码块；请修正后重发。',
+  'err.fenceParse': ' dsh-ui fence JSON 解析失败 {diagnostic} —— 围栏保持为代码块；请让模型检查并修复 JSON 后重发。',
 }

@@ -1,0 +1,6 @@
+SKILL.md text eol=lf
+docs/components.md text eol=lf
+*.png binary
+*.jpg binary
+*.mp4 binary
+*.woff2 binary

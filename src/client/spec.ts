@@ -451,6 +451,8 @@ export interface GenuiBlocks {
 export interface GenuiRow {
   type: 'row'
   items: GenuiNode[]
+  /** Space between related controls, in CSS pixels. */
+  gap?: number
   wrap?: boolean
   spacer?: boolean
   /** Main-axis alignment. `center` is what figure headers need (icon + title

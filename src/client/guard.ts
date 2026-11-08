@@ -356,6 +356,7 @@ function repairNodeFields(value: unknown, ctx: RepairCtx, depth: number): GenuiN
       return {
         type: 'row',
         items: repairItems(v.items, ctx, depth + 1),
+        ...opt('gap', int(v.gap, 0, 64)),
         ...opt('wrap', v.wrap === true ? true : undefined),
         ...opt('spacer', v.spacer === true ? true : undefined),
         // Repair rebuilds every node from a hand-written field list, so a

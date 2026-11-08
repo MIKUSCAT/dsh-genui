@@ -11,3 +11,4 @@ lib/
 site/anthology.html
 # macOS Finder metadata (never source)
 .DS_Store
+*.tgz

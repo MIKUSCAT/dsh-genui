@@ -2,7 +2,7 @@
  * The recursive render dispatcher: maps the white-listed GenuiNode union to
  * concrete components. Leaf cases render inline; compound families live in
  * the sibling block modules. Depth-guarded against pathological specs.
- * @module @changfenhuang/dsh-genui/client/blocks/render-node
+ * @module @mikuscat/dsh-genui/client/blocks/render-node
  */
 import { type ReactNode, useEffect, useState, type CSSProperties } from 'react'
 import css from '../GenuiBlock.module.css'
@@ -28,7 +28,7 @@ import { ImageNode } from './image.tsx'
 import { CarouselNode } from './carousel.tsx'
 import { ImageGroupNode } from './image-group.tsx'
 import { SvgNode } from './svg.tsx'
-import { IconNode } from './icon.tsx'
+import { IconNode, InlineIcon } from './icon.tsx'
 import { MapNode } from './map.tsx'
 import { BlocksNode } from './blocks.tsx'
 
@@ -211,6 +211,7 @@ export function renderNode(
       return (
         <div
           key={key}
+          style={node.gap === undefined ? undefined : { gap: `${node.gap}px` }}
           className={css.row + (node.wrap ? ` ${css.wrap}` : '')
             + (node.justify === undefined || node.justify === 'start' ? '' : ` ${css[`justify${node.justify[0]!.toUpperCase()}${node.justify.slice(1)}`] ?? ''}`)}
         >
@@ -267,8 +268,7 @@ export function renderNode(
           className={`${css.card}${toneClass}${node.flat === true ? ` ${css.cardFlat}` : ''}`}
           style={accentStyle}
         >
-          {node.eyebrow !== undefined && <div className={css.cardEyebrow}>{renderInline(node.eyebrow)}</div>}
-          {node.title !== undefined && <div className={css.cardTitle}>{renderInline(node.title)}</div>}
+          {(node.title ?? node.eyebrow) !== undefined && <div className={css.cardTitle}>{renderInline(node.title ?? node.eyebrow ?? '')}</div>}
           {node.items.map((c, i) => renderNode(c, i, onAction, depth + 1, answers, `${path}.items[${i}]`))}
         </div>
       )
@@ -288,7 +288,7 @@ export function renderNode(
           disabled={!interactive}
           onClick={interactive ? () => onAction(action, { type: 'button', label: node.label }) : undefined}
         >
-          {node.icon !== undefined && <span aria-hidden>{node.icon} </span>}
+          <InlineIcon name={node.icon} />
           {renderInline(node.label, false)}
         </ClickFeedbackButton>
       )
@@ -318,7 +318,7 @@ export function renderNode(
       const tone = node.tone ?? ''
       return (
         <span key={key} className={`${css.badge} ${css[tone] || ''}`}>
-          {node.icon !== undefined && <span aria-hidden>{node.icon} </span>}
+          <InlineIcon name={node.icon} />
           <span className={css.badgeLabel}>{renderInline(node.label, false)}</span>
         </span>
       )

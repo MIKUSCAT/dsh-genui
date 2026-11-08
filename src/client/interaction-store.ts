@@ -12,7 +12,7 @@
  *
  * Bounded: at most MAX_BLOCKS entries, LRU-evicted on write; each block's
  * payload is small (answer maps + a few field values).
- * @module @changfenhuang/dsh-genui/client/interaction-store
+ * @module @mikuscat/dsh-genui/client/interaction-store
  */
 
 /** Durable state of one UI block. */

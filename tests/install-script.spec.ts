@@ -37,13 +37,13 @@ function makeEnv(): Env {
     execFileSync('chmod', ['+x', join(bin, name)])
   }
   // simulated installed package (no exports map → legacy subpath resolve)
-  const pkg = join(profile, 'node_modules', '@changfenhuang', 'dsh-genui')
+  const pkg = join(profile, 'node_modules', '@mikuscat', 'dsh-genui')
   mkdirSync(pkg, { recursive: true })
-  writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@changfenhuang/dsh-genui', version: '0.0.0-test' }))
+  writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: '@mikuscat/dsh-genui', version: '0.0.0-test' }))
   writeFileSync(join(pkg, 'SKILL.md'), PACKAGE_SKILL)
   // profile already lists the plugin → idempotent branch → sync_skill only
   mkdirSync(profile, { recursive: true })
-  writeFileSync(join(profile, 'package.json'), '{"name":"web","dependencies":{"@changfenhuang/dsh-genui":"link:whatever"}}\n')
+  writeFileSync(join(profile, 'package.json'), '{"name":"web","dependencies":{"@mikuscat/dsh-genui":"link:whatever"}}\n')
   const dest = join(home, 'skills', 'genui', 'SKILL.md')
   const agentsDest = join(agentsHome, 'skills', 'genui', 'SKILL.md')
   const run: Env['run'] = (profileArg = 'web') => {
@@ -77,7 +77,7 @@ function env(): Env {
 // Each case spawns REAL shells (stub PATH + chmod + sh) at ~1s per run, so
 // the default 5000ms per-test budget can trip under a full parallel suite
 // (observed on busy machines). A suite-level timeout keeps CI deterministic.
-describe('install.sh skill sync safety', { timeout: 30_000 }, () => {
+describe.skipIf(process.platform === 'win32')('install.sh skill sync safety', { timeout: 30_000 }, () => {
   it('creates the skill file when the target does not exist', () => {
     const e = env()
     const { status, stdout } = e.run()
@@ -120,7 +120,7 @@ describe('install.sh skill sync safety', { timeout: 30_000 }, () => {
 
   it('skips a symlink that resolves to the same package file (dev ln -s case)', () => {
     const e = env()
-    const pkgSkill = join(e.profile, 'node_modules', '@changfenhuang', 'dsh-genui', 'SKILL.md')
+    const pkgSkill = join(e.profile, 'node_modules', '@mikuscat', 'dsh-genui', 'SKILL.md')
     mkdirSync(dirname(e.dest), { recursive: true })
     symlinkSync(pkgSkill, e.dest)
     const { status, stdout } = e.run()
@@ -163,14 +163,14 @@ describe('install.sh skill sync safety', { timeout: 30_000 }, () => {
 
   it('fails loudly when the installed package lacks SKILL.md (incomplete install)', () => {
     const e = env()
-    rmSync(join(e.profile, 'node_modules', '@changfenhuang', 'dsh-genui', 'SKILL.md'))
+    rmSync(join(e.profile, 'node_modules', '@mikuscat', 'dsh-genui', 'SKILL.md'))
     const { status, stdout } = e.run()
     expect(status).not.toBe(0)
     expect(stdout).toContain('无法定位已安装包内的 SKILL.md')
   })
 })
 
-describe('install.sh argument safety', { timeout: 30_000 }, () => {
+describe.skipIf(process.platform === 'win32')('install.sh argument safety', { timeout: 30_000 }, () => {
   it('rejects an illegal profile name before doing anything', () => {
     const e = env()
     const { status, stdout } = e.run('web; rm -rf /tmp/x')

@@ -58,25 +58,20 @@ export function genuiTemplates(): readonly GenuiTemplate[] {
       instruction: t('tpl.dashboard.instruction'),
       demo: {
         title: t('tpl.dashboard.demo.title'),
-        gap: 12,
+        gap: 24,
         items: [
-          { type: 'card', title: t('tpl.dashboard.demo.metrics'), items: [
-            { type: 'grid', cols: 2, items: [
+          { type: 'grid', cols: 2, items: [
               { type: 'stat', label: t('tpl.dashboard.demo.done'), value: '12 / 18', delta: '+4' },
               { type: 'stat', label: t('tpl.dashboard.demo.blocked'), value: '2', delta: '-1' },
               { type: 'stat', label: t('tpl.dashboard.demo.duration'), value: '3.2h', delta: '-8%' },
               { type: 'stat', label: t('tpl.dashboard.demo.coverage'), value: '86%' },
-            ] },
           ] },
-          { type: 'card', title: t('tpl.dashboard.demo.progress'), items: [
-            { type: 'progress', label: t('tpl.dashboard.demo.milestone'), value: 68, valueLabel: '68 / 100' },
-          ] },
-          { type: 'card', title: t('tpl.dashboard.demo.todo'), items: [
-            { type: 'list', items: [
+          { type: 'progress', label: t('tpl.dashboard.demo.milestone'), value: 68, valueLabel: '68 / 100' },
+          { type: 'text', size: 'h3', content: t('tpl.dashboard.demo.todo') },
+          { type: 'list', items: [
               t('tpl.dashboard.demo.todo1'),
               t('tpl.dashboard.demo.todo2'),
               t('tpl.dashboard.demo.todo3'),
-            ] },
           ] },
         ],
       },
@@ -135,7 +130,6 @@ export function genuiTemplates(): readonly GenuiTemplate[] {
         title: t('tpl.quiz.demo.title'),
         gap: 10,
         items: [
-          { type: 'text', content: t('tpl.quiz.demo.hint'), size: 'muted' },
           { type: 'quiz', id: 'q-dsh', question: t('tpl.quiz.demo.q1'), options: [
             { label: t('tpl.quiz.demo.q1a') },
             { label: t('tpl.quiz.demo.q1b'), correct: true, feedback: t('tpl.quiz.demo.q1bfx') },
@@ -285,7 +279,6 @@ export function genuiTemplates(): readonly GenuiTemplate[] {
       demo: {
         title: t('tpl.3d.demo.title'),
         items: [
-          { type: 'text', content: t('tpl.3d.demo.note'), size: 'muted' },
           { type: 'scene3d', title: t('tpl.3d.demo.scene'), meshes: [
             { shape: 'box', size: 1, color: '#4FC3F7', position: [-1.2, 0, 0] },
             { shape: 'sphere', size: 0.6, color: '#81C784', position: [1.2, 0, 0] },

@@ -201,8 +201,8 @@ describe('Map real-browser acceptance contract (no browser launched)', () => {
     expect(await readFile(prepared.auditFile, 'utf8')).toBe('')
     expect(await readFile(patch[1].insert[0].name, 'utf8')).toContain('Refusing unexpected or extra model calls')
   })
-  it('preserves the source host matrix and adds exact published alpha coverage', async () => {
-    const workflow = parse(await readFile('.github/workflows/ci.yml', 'utf8'))
+  it('retains the source host matrix and published alpha in the compatibility workflow', async () => {
+    const workflow = parse(await readFile('.github/workflows/compatibility.yml', 'utf8'))
     expect(Object.keys(workflow.jobs)).toEqual(['check', 'browser-text-newlines', 'windows-pack', 'published-alpha'])
     expect(workflow.permissions).toBeUndefined()
     expect(workflow.jobs.check.strategy.matrix.include.map((lane: { 'host-ref': string }) => lane['host-ref']))
@@ -218,16 +218,20 @@ describe('Map real-browser acceptance contract (no browser launched)', () => {
     expect(alpha.find((s: { name?: string }) => s.name === 'Install exact published alpha host').run).toContain('prepare-published-host.mjs 0.2.2-alpha.2')
     expect(alpha.find((s: { name?: string }) => s.name === 'Alpha packed Map browser acceptance').run).toContain('--smoke --map --install tarball')
   })
-  it('requires successful alpha API and packed browser acceptance before npm publication', async () => {
+  it('requires successful checks and verified packing before GitHub publication', async () => {
     const workflow = parse(await readFile('.github/workflows/release.yml', 'utf8'))
-    const steps = workflow.jobs.publish.steps
-    const publish = steps.findIndex((s: { name?: string }) => s.name === 'Publish to npm')
-    for (const name of ['Check published alpha API', 'Install exact published alpha host', 'Alpha packed gallery and computed acceptance', 'Alpha packed Map browser acceptance']) {
-      const index = steps.findIndex((s: { name?: string }) => s.name === name)
+    const steps = workflow.jobs.release.steps
+    const publish = steps.findIndex((step: { name?: string }) => step.name === 'Publish GitHub assets')
+    expect(publish).toBeGreaterThan(0)
+    for (const command of ['pnpm run check', 'pnpm run check:design', 'node scripts/verify-pack.mjs --keep']) {
+      const index = steps.findIndex((step: { run?: string }) => step.run === command)
       expect(index).toBeGreaterThanOrEqual(0)
       expect(index).toBeLessThan(publish)
       expect(steps[index]['continue-on-error']).not.toBe(true)
     }
+    expect(steps[publish].run).toContain('sha256sum dsh-genui.tgz')
+    expect(steps[publish].run).toContain('gh release create')
+    expect(steps[publish].run).not.toContain('npm publish')
   })
   it('keeps Map mode separate from existing Gallery/Sidechat and validates before port probing', async () => {
     const source = await readFile('scripts/e2e.mjs', 'utf8')
@@ -250,7 +254,7 @@ describe('Map real-browser acceptance contract (no browser launched)', () => {
     const options: ts.CompilerOptions = { strict: true, noEmit: true, skipLibCheck: true,
       target: ts.ScriptTarget.ES2024, module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
       jsx: ts.JsxEmit.ReactJSX, allowImportingTsExtensions: true, baseUrl: process.cwd(), paths: {
-        '@changfenhuang/dsh-genui/embed': ['src/client/embed.ts'], '@map-test/i18n': ['src/client/i18n/runtime.ts'],
+        '@mikuscat/dsh-genui/embed': ['src/client/embed.ts'], '@map-test/i18n': ['src/client/i18n/runtime.ts'],
         '@map-test/theme': ['src/client/artifact/standalone-theme.ts'],
       } }
     const program = ts.createProgram([resolve('tests/browser/map.tsx')], options)

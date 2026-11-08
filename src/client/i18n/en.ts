@@ -44,7 +44,7 @@ export const EN = {
   'panel.achievements.title': 'Exploration trophies: badges and progress',
   'panel.close.aria': 'Close panel',
   'panel.resize.aria': 'Resize panel height',
-  'panel.hint': '💡 This is the GenUI session panel — hit “Templates” above to browse runnable examples',
+  'panel.hint': ' This is the GenUI session panel — hit “Templates” above to browse runnable examples',
   'panel.boundary': 'panel',
   'panel.flash.inserted': 'Instruction inserted into the composer — send it to generate',
 
@@ -367,9 +367,9 @@ export const EN = {
   // -------------------------------------------------------- error text
   'err.boundary.generic': 'this interface',
   'err.boundary.fence': 'this interface',
-  'err.boundary.body': '⚠️ {label} failed to render (isolated — the rest of the reply is unaffected)',
+  'err.boundary.body': ' {label} failed to render (isolated — the rest of the reply is unaffected)',
   'err.fieldValidation': 'GenUI field validation failed: {errors}',
   'err.chartValidation': 'chart field validation failed: {errors}',
-  'err.fenceKeptAsCode': '⚠️ dsh-ui {diagnostic} — the fence stays a code block; fix it and resend.',
-  'err.fenceParse': '⚠️ dsh-ui fence JSON failed to parse {diagnostic} — the fence stays a code block; ask the model to fix the JSON and resend.',
+  'err.fenceKeptAsCode': ' dsh-ui {diagnostic} — the fence stays a code block; fix it and resend.',
+  'err.fenceParse': ' dsh-ui fence JSON failed to parse {diagnostic} — the fence stays a code block; ask the model to fix the JSON and resend.',
 } as const

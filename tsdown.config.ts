@@ -17,7 +17,7 @@ import type { UserConfig } from 'tsdown'
 import { Rolldown } from 'tsdown'
 import { transform } from 'lightningcss'
 
-const ID = '@changfenhuang/dsh-genui'
+const ID = '@mikuscat/dsh-genui'
 const PROJECT_ROOT = dirname(fileURLToPath(import.meta.url))
 
 /** Module-table entries this bundle may leave external: platform seed rows

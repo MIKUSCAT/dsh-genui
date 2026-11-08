@@ -28,7 +28,7 @@ async function fixture(t, version = '0.2.1-rc.3') {
   await mkdir(join(cli, 'lib'), { recursive: true })
   await writeFile(join(cli, 'package.json'), JSON.stringify({ name: '@deepseek-ai/dsh', version }))
   await writeFile(join(cli, 'lib/bin.js'), '// synthetic, never executed\n')
-  const genuiTarball = join(root, 'genui.tgz'), bytes = pack('@changfenhuang/dsh-genui', '0.14.0')
+  const genuiTarball = join(root, 'genui.tgz'), bytes = pack('@mikuscat/dsh-genui', '0.14.0')
   await writeFile(genuiTarball, bytes)
   return { root, options: { dshRoot: join(root, 'host'), dshBin: join(cli, 'lib/bin.js'),
     genuiTarball, genuiTarballSha256: sha(bytes), artifactDir: join(root, 'artifacts'),
@@ -189,7 +189,7 @@ test('existing smoke awaits the gate before closing its caller-owned browser or 
   assert.match(source.slice(gate, gate + 220), /genuiTarball: TARBALL, genuiTarballSha256: TARBALL_SHA/u)
 })
 test('same CI job runs pure contracts and uploads only bounded synthetic evidence', async () => {
-  const workflow = await readFile(new URL('../../../.github/workflows/ci.yml', import.meta.url), 'utf8')
+  const workflow = await readFile(new URL('../../../.github/workflows/compatibility.yml', import.meta.url), 'utf8')
   assert.match(workflow, /node --test scripts\/sidechat-acceptance\/tests\/\*\.test\.mjs/u)
   assert.match(workflow, /node scripts\/e2e\.mjs --smoke --sidechat --install tarball/u)
   const block = workflow.split('      - name: Archive dual-plugin sidechat evidence\n')[1].split('      - name: Archive e2e artifacts\n')[0]

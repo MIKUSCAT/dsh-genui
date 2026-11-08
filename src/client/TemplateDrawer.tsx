@@ -117,8 +117,6 @@ export function TemplateDrawer({ onUse, tab }: TemplateDrawerProps) {
                 onClick={() => setSelected(prev => (prev?.id === tpl.id ? null : tpl))}
               >
                 <span className={css.cardName}>{tpl.name}</span>
-                <span className={css.cardMeta}>{t(categoryLabelKey(tpl.category))}</span>
-                <span className={css.cardDesc}>{tpl.description}</span>
               </button>
             ))}
           </div>

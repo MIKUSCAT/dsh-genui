@@ -29,10 +29,10 @@
 .cat {
   padding: 4px 12px;
   border: 1px solid var(--dsw-alias-border-l1, rgba(255, 255, 255, 0.12));
-  border-radius: 999px;
+  border-radius: var(--dsl-g-radius-control, 8px);
   background: transparent;
   color: var(--dsw-alias-label-secondary, var(--dsl-g-font-muted-fallback, rgba(255, 255, 255, 0.6)));
-  font-size: 12px;
+  font-size: var(--dsl-g-font-title, 14px);
   line-height: 1.5;
   cursor: pointer;
 }
@@ -50,7 +50,7 @@
 /* ---- template cards ---- */
 .list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
   gap: 8px;
 }
 
@@ -76,18 +76,18 @@
 }
 
 .cardName {
-  font-size: 13px;
+  font-size: var(--dsl-g-font-title, 14px);
   font-weight: 600;
   line-height: 1.5;
 }
 
 .cardMeta {
-  font-size: 11px;
+  font-size: var(--dsl-g-font-title, 14px);
   color: var(--dsw-alias-label-tertiary, rgba(255, 255, 255, 0.45));
 }
 
 .cardDesc {
-  font-size: 12px;
+  font-size: var(--dsl-g-font-title, 14px);
   line-height: 1.5;
   color: var(--dsw-alias-label-secondary, rgba(255, 255, 255, 0.6));
 }
@@ -111,7 +111,7 @@
 .toolbarTitle {
   flex: 1;
   min-width: 0;
-  font-size: 13px;
+  font-size: var(--dsl-g-font-title, 14px);
   font-weight: 600;
   color: var(--dsw-alias-label-primary);
 }
@@ -121,7 +121,7 @@
   padding: 5px 12px;
   border-radius: var(--dsl-g-radius-control, 8px);
   border: 1px solid transparent;
-  font-size: 12px;
+  font-size: var(--dsl-g-font-title, 14px);
   line-height: 1.5;
   cursor: pointer;
 }

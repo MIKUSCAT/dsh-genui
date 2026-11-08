@@ -85,8 +85,8 @@ function specEquivalent(a: GenuiSpec, b: GenuiSpec): boolean {
 
 /** Stateful implementation. Streaming state adopts its first durable key
  * when the reply settles; switching an existing durable key starts fresh. */
-function GenuiBlockInstance({ spec, stateKey, animateEntrance = true, initialState, onStateChange, onStateSnapshot }: GenuiBlockProps) {
-  const gap = spec.gap ?? 16
+function GenuiBlockInstance({ spec, stateKey, animateEntrance = false, initialState, onStateChange, onStateSnapshot }: GenuiBlockProps) {
+  const gap = spec.gap ?? 24
   const copyPreviews = useCopyPreviewState(spec)
   const onAction = useDebouncedAction(useGenuiAction())
   const stateChangeRef = useRef(onStateChange)

@@ -8,8 +8,8 @@ describe('standalone theme', () => {
 
     const expectedLight = {
       'color-scheme': 'light',
-      '--dsw-static-neutral-bluish-00': 'rgb(255, 255, 255)',
-      '--dsw-static-neutral-bluish-1000': 'rgb(15, 17, 21)',
+      '--dsw-static-neutral-bluish-00': '#faf9f5',
+      '--dsw-static-neutral-bluish-1000': '#141413',
       '--dsw-static-neutral-bluish-700': 'rgb(97, 102, 107)',
       '--dsw-alias-bg-base': 'var(--dsw-static-neutral-bluish-00)',
       '--dsw-alias-bg-layer-1': 'var(--dsw-static-neutral-bluish-00)',

@@ -357,7 +357,8 @@ describe('genui:fence section', () => {
     const declared = /^description:\s*(.+?)\s*$/mu.exec(front)?.[1]?.replace(/^['"]|['"]$/gu, '')
     expect(declared, 'SKILL.md must declare a description').toBeDefined()
     expect(skill?.description).toBe(declared)
-    expect(skill?.content).toContain('chart:')
+    expect(skill?.content).toContain('[components](docs/components.md)')
+    expect(readFileSync(join(process.cwd(), 'docs/components.md'), 'utf8')).toContain('chart:')
     expect(skill?.content).not.toContain('name: genui')
 
     await genui.dispose()
@@ -467,13 +468,13 @@ describe('genui:fence section', () => {
     })
 
     const first = await ctx.plugin(GenUI)
-    expect([...routes.keys()]).toEqual(['/plugins/@changfenhuang/dsh-genui/assets'])
+    expect([...routes.keys()]).toEqual(['/plugins/@mikuscat/dsh-genui/assets'])
 
     await first.dispose()
     expect(routes.size).toBe(0)
 
     const second = await ctx.plugin(GenUI)
-    expect([...routes.keys()]).toEqual(['/plugins/@changfenhuang/dsh-genui/assets'])
+    expect([...routes.keys()]).toEqual(['/plugins/@mikuscat/dsh-genui/assets'])
     await second.dispose()
     expect(routes.size).toBe(0)
   })
@@ -491,7 +492,7 @@ describe('genui:fence section', () => {
       },
     })
     await vi.waitFor(() => {
-      expect(firstRoutes.get('/plugins/@changfenhuang/dsh-genui/assets')).toEqual(expect.objectContaining({ kind: 'prefix' }))
+      expect(firstRoutes.get('/plugins/@mikuscat/dsh-genui/assets')).toEqual(expect.objectContaining({ kind: 'prefix' }))
     })
 
     await disposeFirstServer()
@@ -506,7 +507,7 @@ describe('genui:fence section', () => {
       },
     })
     await vi.waitFor(() => {
-      expect(replacementRoutes.get('/plugins/@changfenhuang/dsh-genui/assets')).toEqual(expect.objectContaining({ kind: 'prefix' }))
+      expect(replacementRoutes.get('/plugins/@mikuscat/dsh-genui/assets')).toEqual(expect.objectContaining({ kind: 'prefix' }))
     })
 
     await genui.dispose()

@@ -10,7 +10,7 @@
  * Lookup is two-tier (see icon-lazy): 64 common glyphs render synchronously,
  * the remaining 685 arrive from `lib/assets/icons.js` after a one-shot load.
  * An unknown name never breaks the block — it renders a neutral dot.
- * @module @changfenhuang/dsh-genui/client/blocks/icon
+ * @module @mikuscat/dsh-genui/client/blocks/icon
  */
 import { createElement, memo, useEffect, useState, type ReactNode } from 'react'
 import css from '../GenuiBlock.module.css'
@@ -91,3 +91,9 @@ export const IconNode = memo(function IconNode({ node }: { node: GenuiIcon }) {
     </span>
   )
 })
+
+/** Legacy emoji icon fields stay accepted; only named SVG glyphs are displayed. */
+export function InlineIcon({ name }: { name: string | undefined }): ReactNode {
+  if (name === undefined || !isKnownIcon(name)) return null
+  return <IconNode node={{ type: 'icon', name, size: 16 }} />
+}

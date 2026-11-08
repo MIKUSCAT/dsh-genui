@@ -8,6 +8,7 @@ import { createGenuiArtifact } from './create.ts'
 import { downloadGenuiArtifactHtml, downloadGenuiArtifactJson } from './download.ts'
 import { GenuiExportError } from './types.ts'
 import css from './ArtifactExport.module.css'
+import surfaceCss from '../GenuiBlock.module.css'
 
 interface ArtifactExportMenuProps {
   getArtifact: () => ReturnType<typeof createGenuiArtifact>
@@ -74,7 +75,6 @@ function ArtifactExportMenu({ getArtifact }: ArtifactExportMenuProps) {
 
   return (
     <div className={css.chrome} ref={rootRef} data-genui-export>
-      {report.externalMedia.length > 0 && <span className={css.notice}>{t('artifact.externalMediaNotice')}</span>}
       {errorMessage !== '' && <span className={css.statusError} aria-live="polite">{errorMessage}</span>}
       {/* 无边框图标入口：完成态内容不再多出一个描边按钮。图标按钮的 aria-label
           + title 组合与项目里的 panelTpl / panelToggle 一致。 */}
@@ -91,6 +91,7 @@ function ArtifactExportMenu({ getArtifact }: ArtifactExportMenuProps) {
       </button>
       {open && (
         <div className={css.menu} role="menu">
+          {report.externalMedia.length > 0 && <span className={css.menuNotice}>{t('artifact.externalMediaNotice')}</span>}
           <button type="button" role="menuitem" className={css.item} disabled={report.customTypes.length > 0} onClick={() => void exportAs('html')}>{t('artifact.exportHtml')}</button>
           {report.customTypes.length > 0 && <span className={css.menuNotice}>{t('artifact.unsupportedCustom', { types: report.customTypes.join(', ') })}</span>}
           <button type="button" role="menuitem" className={css.item} onClick={() => void exportAs('json')}>{t('artifact.exportJson')}</button>
@@ -113,7 +114,7 @@ export function ExportableGenuiBlock(props: ExportableGenuiBlockProps) {
   const getArtifact = useCallback(() => createGenuiArtifact(props.spec, stateRef.current), [props.spec])
   const { exportEnabled = true, ...blockProps } = props
   return (
-    <div data-genui-artifact>
+    <div className={surfaceCss.artifactTheme} data-genui-artifact>
       <GenuiBlock {...blockProps} onStateSnapshot={captureState} />
       {exportEnabled && <ArtifactExportMenu getArtifact={getArtifact} />}
     </div>

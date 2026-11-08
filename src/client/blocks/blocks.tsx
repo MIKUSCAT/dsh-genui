@@ -12,7 +12,7 @@
  * subject. A 15-rect figure with hand-computed x/y aligns by luck; the same
  * figure as rows × cells aligns by construction, and costs ONE node against
  * the 200-node budget instead of ~30.
- * @module @changfenhuang/dsh-genui/client/blocks/blocks
+ * @module @mikuscat/dsh-genui/client/blocks/blocks
  */
 import { memo } from 'react'
 import css from '../GenuiBlock.module.css'

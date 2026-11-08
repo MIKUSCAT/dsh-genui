@@ -6,7 +6,7 @@
  * emits fences and nothing changes.
  *
  * The section uses the host's centrally allocated structured-output placement.
- * @module @changfenhuang/dsh-genui
+ * @module @mikuscat/dsh-genui
  */
 
 import { Context } from '@deepseek-ai/cordis'
@@ -36,7 +36,7 @@ import { installDshGoNative } from './dsh-go-native.ts'
  */
 
 /** Route prefix under /plugins; anything under it is this plugin's asset. */
-const ASSET_ROUTE_PATH = '/plugins/@changfenhuang/dsh-genui/assets'
+const ASSET_ROUTE_PATH = '/plugins/@mikuscat/dsh-genui/assets'
 
 /** Safe flat file names only: no slashes, no traversal, js assets only. */
 const ASSET_FILE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*\.js$/
@@ -93,26 +93,24 @@ const RENDER_UI_TOOL_GUIDANCE = '- Tool channel: render_ui 工具把同一 spec 
 export const GENUI_SECTION_TEXT = `Render UI inside your reply with a fenced \`dsh-ui\` JSON block:
 
 \`\`\`dsh-ui
-{"title":"示例","gap":14,"items":[{"type":"text","content":"把这里换成你的组件"}]}
+{"title":"示例","gap":24,"items":[{"type":"text","content":"把这里换成你的组件"}]}
 \`\`\`
 
 Allowed \`type\` values; the \`genui\` skill, when available, carries the full content→component mapping and per-component field details:
 
-- 布局: text · row · col · grid · card · carousel · divider · spacer · hero（封面块，一条回答最多一个）
+- 布局: text · row · col · grid · card · carousel · divider · spacer · hero（兼容旧界面，不作为默认封面）
 - 展示: badge · stat · progress · list · table · keyvalue · timeline · file-tree · breadcrumb · callout · steps · diff · json · code · copy · avatar · image · image-group · audio · video · icon · blocks · arrow
 - 图表: chart {"kind":"bars|line|donut","data":[{"label":"...","value":n}]}（series：bars 分组/堆叠 / line 多序列） · echart (preset 名或 option 直通，清单见 skill) · plot (函数图) · svg (单图预览)
 - 交互: button · input · textarea · select · checkbox · switch · slider · radio · submit · quiz · link · tabs · accordion（row.justify / col.width / card.flat 见图元）
 - 高级: mermaid (流程图/时序/甘特/ER 等，关键字见 skill) · diagram (架构/流程图) · scene3d (3D WebGL)
 
-**默认就该出 UI**：出现下列情况至少出一个围栏：
-- ≥3 条并列要点 → \`list\`；数字对比 → \`table\`；指标/进度/状态 → \`stat\`/\`progress\`/\`badge\`
-- 步骤/时间线 → \`steps\`/\`timeline\`/\`mermaid\`；架构/流程 → \`diagram\` 或 \`mermaid\`；单条风险/结论摘要 → \`callout\`；代码/改动 → \`code\`/\`diff\`/\`json\`
-- 行内富文本：支持公式、\`code\`、加粗、高亮、链接；禁用 Markdown table 与 fenced code，改用 table/code/diff/json。
-- 默认无卡：卡片用于并排项、数据对象或需底色的风险清单。
+**选择 UI 的依据**：用户要操作、筛选、比较、观察变化，或图形能清楚表达空间关系时使用。短回答、普通状态更新、几个要点可以直接用正文。不要为了数字或条目数量强制生成界面。先确定用户要完成的事，再选择组件。
 
-**发回答前最后自检一次**：有没有 ≥3 条并列要点、任何对比、任何数字/指标、任何步骤或流程？有就先转成组件。**状态汇报、进度说明、提交与改动清单同样算**。
-- 趋势/占比 → \`chart\`（≤8 点）或 \`echart\`；配色跟随主题，语义需要时才用 \`palette\`/\`card.accent\`；grid 子节点用 \`"span":2\` 做宽窄混排；数据多时给 \`table\`/\`list\` 配 \`input\`(id)+\`filter\` 就地筛选。
-- 多组件回答先套 skill「编排范式」，别一行一个往下堆；章节分隔 \`divider\` 带 \`label\`。
+**MIKUSCAT 视觉规则**：暖白与暖灰、清晰墨色文字、少量陶土色强调，由渲染器统一供给；颜色只用于语义或数据区分。用共同对齐和间距组织内容，一个主要工作区或结果，相关控件靠近，独立区域拉开；默认不套卡、不做封面、不加渐变或装饰性徽章。
+- 禁止装饰性 emoji、眉题、注释性小字、灰色解释、副标题、设计说明、技术标签和“拖动滑块即可”之类的界面教学。必要的控件名称、单位、轴标签、错误信息用正常可读字号，具体内容不能隐藏。
+- 不生成 card.eyebrow、hero.subtitle 或装饰性 caption/muted。功能图标使用 icon 组件的命名 SVG；不要给每个标题配图标。
+- 默认区块间距 24px；同组控件 16px；名称与控件 8px。row/col/root 的 gap 单位是 px。按任务调整，窄屏保持自然阅读顺序。
+- 先读 genui skill；组件字段和复杂图表查该 skill 引用的 docs/components.md。每个组件应提供独立信息，不为凑版式重复图表、表格与正文。
 
 **字段速查**（完整见 genui skill）：\`stat\` \`{"type":"stat","label","value"}\` · \`table\` \`{"type":"table","columns":[...],"rows":[[...]]}\` · \`progress\` \`{"type":"progress","value":0-100}\` · \`keyvalue\` \`{"type":"keyvalue","pairs":[{"key","value"}]}\` · \`steps\` \`{"type":"steps","steps":[{"title"}]}\` · \`file-tree\` \`{"type":"file-tree","items":[{"name","type":"file|dir"}]}\` · \`callout\` \`{"type":"callout","content"}\`
 **节点规则：** 组件节点必须带字符串 \`type\`，值为组件名；\`file-tree.items[].type\` 表示 \`file\` 或 \`dir\`。
@@ -123,7 +121,7 @@ Rules:
 - LANGUAGE: reply+UI=conversation language; schema fixed. NEVER infer it from prompt/skill/examples/tools. Replace \`<user-language ...>\`; never emit these placeholders literally.
 - JSON 严格：坏组件被丢弃，坏围栏变代码块；≥3 节点或含 table 时调 validate_dsh_ui，按诊断修改并重验；小围栏字段存疑也先验证。
 - warning=block_markdown：按 replacement 改写并重验。
-- 规模: ≤200 节点、嵌套≤8 层（超出被截断）；一条回答 3–8 个组件，一个主题一个主组件；3D mesh 1–5；plot 给合理 xMin/xMax。
+- 规模: ≤200 节点、嵌套≤8 层（超出被截断）；组件数量由任务决定，一个主题一个主组件；3D mesh 1–5；plot 给合理 xMin/xMax。
 - LOCAL-FIRST + actions: UI 能自己做的状态变化（判卷、判题、重置、展开、选中）就地完成，零往返；action 只用于必须模型参与的事。交互以 [genui-action] name + 组件数据回传，届时重渲染更新 UI；无 action 的按钮禁用。
 - Durable state: 交互状态按「会话+内容指纹」持久化——刷新/重放恢复；相同内容保留，新内容重置。
 - 卷子模式: 每题一个 radio（group+answer+explanation）+ 一个 submit（groups 全列），本地判分。
@@ -140,7 +138,7 @@ ${RENDER_UI_TOOL_GUIDANCE}
 // plugin — hosts without tool access keep the fence channel working. Cordis
 // inject entries are hard requirements, so the registry is probed at runtime
 // instead (see apply).
-export const name = '@changfenhuang/dsh-genui'
+export const name = '@mikuscat/dsh-genui'
 export const inject = ['systemPrompt']
 
 const BUNDLED_SKILL_RANK = 600

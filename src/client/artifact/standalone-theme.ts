@@ -2,7 +2,7 @@
 export const STANDALONE_THEME_CSS = `
 :root {
   color-scheme: light;
-  --dsw-static-neutral-bluish-00: rgb(255, 255, 255);
+  --dsw-static-neutral-bluish-00: #faf9f5;
   --dsw-static-neutral-bluish-50: rgb(249, 250, 251);
   --dsw-static-neutral-bluish-300: rgb(207, 211, 214);
   --dsw-static-neutral-bluish-400: rgb(173, 178, 184);
@@ -12,8 +12,8 @@ export const STANDALONE_THEME_CSS = `
   --dsw-static-neutral-bluish-850: rgb(44, 44, 46);
   --dsw-static-neutral-bluish-875: rgb(35, 35, 36);
   --dsw-static-neutral-bluish-900: rgb(27, 27, 28);
-  --dsw-static-neutral-bluish-950: rgb(21, 21, 23);
-  --dsw-static-neutral-bluish-1000: rgb(15, 17, 21);
+  --dsw-static-neutral-bluish-950: #262624;
+  --dsw-static-neutral-bluish-1000: #141413;
   --dsw-alias-bg-base: var(--dsw-static-neutral-bluish-00);
   --dsw-alias-bg-layer-1: var(--dsw-static-neutral-bluish-00);
   --dsw-alias-bg-layer-2: var(--dsw-static-neutral-bluish-00);

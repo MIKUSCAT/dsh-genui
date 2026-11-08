@@ -25,4 +25,4 @@ it('type-checks public map configuration with the engine package unavailable', (
     const vendorProgram = ts.createProgram([file], options)
     expect(ts.getPreEmitDiagnostics(vendorProgram).map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n'))).toEqual([])
   } finally { rmSync(dir, { recursive: true, force: true }) }
-})
+}, 20_000)

@@ -39,9 +39,6 @@ import css from './GenuiBlock.module.css'
 const PANEL_HEIGHT_MIN = 120
 const PANEL_HEIGHT_MAX = 600
 
-/** First-panel hint dismissal flag (module-level localStorage key):
- *  shown once beside the first rendered spec, never again. */
-const ONBOARD_KEY = 'dsh.genui.panel-hint'
 
 // Achievement telemetry re-exports (already injected at apply).
 import { recordPanel, recordTemplateUse } from './achievement-store.ts'
@@ -80,28 +77,6 @@ export function GenuiPanel({ sessionId, sendGenuiAction, insertTemplate, fileLin
   const [flash, setFlash] = useState<string | null>(null)
   const flashTimer = useRef(0)
   const hasSpec = spec !== null && spec.items.length > 0
-  // First-panel hint: shown once beside the first rendered spec (never on the
-  // hero — the host composer hero flex-compresses dock items with no content,
-  // and the template button is a permanent header entry anyway).
-  const [hint, setHint] = useState<boolean>(() => {
-    try {
-      return hasSpec && localStorage.getItem(ONBOARD_KEY) !== '1'
-    } catch {
-      return hasSpec
-    }
-  })
-  useEffect(() => {
-    if (!hint) return
-    const t = window.setTimeout(() => {
-      try {
-        localStorage.setItem(ONBOARD_KEY, '1')
-      } catch {
-        // Private-mode storage failures are non-fatal: the hint may reappear.
-      }
-      setHint(false)
-    }, 6000)
-    return () => window.clearTimeout(t)
-  }, [hint])
   // Achievement telemetry (0.9.5): one panel appearance per dock mount.
   useEffect(() => {
     if (!hasSpec) return
@@ -249,11 +224,6 @@ export function GenuiPanel({ sessionId, sendGenuiAction, insertTemplate, fileLin
           <span aria-hidden>✕</span>
         </button>
       </div>
-      {hint && drawer === null && (
-        <div className={css.panelHint} role="status">
-          {t('panel.hint')}
-        </div>
-      )}
       {!collapsed && (
         <div
           ref={bodyRef}

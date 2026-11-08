@@ -1,13 +1,6 @@
 name: Deploy dsh-genui site to Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "src/**"
-      - "scripts/build-anthology-page.mts"
-      - "site/**"
-      - ".github/workflows/deploy-product-site.yml"
   workflow_dispatch:
 
 permissions:

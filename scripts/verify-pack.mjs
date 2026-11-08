@@ -45,7 +45,7 @@ for (const entry of Object.values(pkgJson.exports)) {
 // Everything the loader / installer / TS consumers resolve — plus the lazy
 // engine assets the node-half route serves to the browser on demand.
 const required = [
-  'package.json', 'LICENSE', 'SKILL.md', 'README.md', 'CHANGELOG.md', 'demo-prompts.md', 'cordis.patch.yml',
+  'package.json', 'LICENSE', 'SKILL.md', 'docs/components.md', 'README.md', 'CHANGELOG.md', 'demo-prompts.md', 'cordis.patch.yml',
   'lib/assets/mermaid.js', 'lib/assets/three.js', 'lib/assets/icons.js',
   // 字形资产与它的两份说明文件：漏掉任何一个都意味着 npm 用户拿到坏包，
   // 而主渲染路径在本地开发时照样是绿的。
@@ -61,7 +61,11 @@ const required = [
 const dir = mkdtempSync(join(tmpdir(), 'dsh-genui-pack-'))
 let keepTarball = false
 try {
-  const out = execFileSync('npm', ['pack', '--pack-destination', dir, '--json'], {
+  // Invoke npm's JS entry on Windows; execFile cannot execute a .cmd shim.
+  const windows = process.platform === 'win32'
+  const packArgs = ['pack', '--pack-destination', dir, '--json']
+  const npmCli = join(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
+  const out = execFileSync(windows ? process.execPath : 'npm', windows ? [npmCli, ...packArgs] : packArgs, {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   })
